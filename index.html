@@ -14,6 +14,7 @@
 <meta property="og:image" content="https://SITE_URL/assets/og.png">
 <meta property="og:url" content="https://SITE_URL/">
 <meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
 <link rel="icon" type="image/png" href="assets/favicon.png">
 <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
 <link rel="preload" href="assets/fonts/PlayfairDisplay-VariableFont_wght.ttf" as="font" type="font/ttf" crossorigin>
@@ -104,7 +105,7 @@ a { color: var(--gold); }
 }
 .top .wrap { display: flex; align-items: center; justify-content: space-between; height: 64px; gap: 12px; }
 .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--gold); }
-.brand img { width: 36px; height: 36px; border-radius: 9px; }
+.brand .mark { width: 34px; height: 22px; }
 .brand span { font-family: var(--serif); font-weight: 900; font-size: 22px; letter-spacing: .5px; }
 .nav { display: flex; gap: 22px; align-items: center; }
 .nav a { color: var(--ivory); text-decoration: none; font-weight: 700; font-size: 15px; }
@@ -145,12 +146,12 @@ h1 em { font-style: normal; color: var(--gold); }
 .ticks svg { width: 22px; height: 22px; flex: none; }
 
 .phone {
-  position: relative; border-radius: 36px; padding: 10px;
-  background: #0d0b09;
+  position: relative; border-radius: 34px; padding: 6px;
+  background: #0d0b09; overflow: hidden;
   border: var(--line) solid var(--gold);
   box-shadow: 0 30px 60px rgba(0,0,0,.55), 0 0 0 8px rgba(212,174,110,.08);
 }
-.phone img { border-radius: 26px; width: 100%; }
+.phone img { border-radius: 28px; width: 100%; }
 .hero .phone { width: min(330px, 80%); margin-inline: auto; transform: rotate(2.5deg); }
 .float {
   position: absolute; width: 120px; filter: drop-shadow(0 18px 18px rgba(0,0,0,.5));
@@ -190,7 +191,7 @@ h2 {
 .dark .eyebrow { color: var(--gold); }
 .feature { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; }
 .feature.flip .text { order: 2; }
-.feature .art { display: flex; justify-content: center; gap: 18px; }
+.feature .art { display: flex; justify-content: center; align-items: flex-start; gap: 18px; }
 .feature .art .phone { width: min(280px, 48%); }
 .feature .art .phone:nth-child(2) { margin-top: 60px; }
 .feature .art.one .phone { width: min(320px, 80%); }
@@ -269,7 +270,7 @@ details p { margin: 0 0 18px; color: var(--muted); }
 .final h2 { color: var(--ivory); }
 .final .lead { margin-inline: auto; }
 .final .cta { justify-content: center; }
-.final img.logo { width: 110px; margin: 0 auto 18px; border-radius: 26px; border: var(--line) solid var(--gold); }
+.final img.logo { width: 128px; margin: 0 auto 18px; filter: drop-shadow(0 14px 24px rgba(0,0,0,.6)); }
 
 footer { background: #0e0c0a; color: var(--muted); padding: 40px 0; font-size: 14px; }
 footer .wrap { display: grid; gap: 12px; }
@@ -298,7 +299,7 @@ footer a:hover { color: var(--gold); }
 
 <header class="top">
   <div class="wrap">
-    <a class="brand" href="#"><img src="assets/logo.webp" alt="" width="36" height="36"><span>BEST CHESS</span></a>
+    <a class="brand" href="#" aria-label="BEST CHESS home"><svg class="mark" viewBox="0 0 64 40" aria-hidden="true"><path fill="currentColor" d="M4 10a4 4 0 1 1 3.6 4l5.4 13 12-15a4 4 0 1 1 14 0l12 15 5.4-13A4 4 0 1 1 60 10l-6 22H10z"/><rect x="10" y="34" width="44" height="6" rx="2" fill="currentColor"/></svg><span>BEST CHESS</span></a>
     <nav class="nav">
       <a class="hide-m" href="#review">Reviews</a>
       <a class="hide-m" href="#puzzles">Puzzles</a>
@@ -333,7 +334,7 @@ footer a:hover { color: var(--gold); }
     </div>
     <div class="hero-art">
       <img class="float n" src="assets/pieces/wN.webp" alt="" width="110" height="110">
-      <div class="phone"><img src="assets/screens/review.webp" alt="BEST CHESS game review showing a Brilliant move, 16. Qb8+, with the engine's evaluation graph" width="540" height="1105"></div>
+      <div class="phone"><img src="assets/screens/review.webp" alt="BEST CHESS game review showing a Brilliant move, 16. Qb8+, with the engine's evaluation graph" width="540" height="1096"></div>
       <img class="float k" src="assets/pieces/bK.webp" alt="" width="130" height="130">
     </div>
   </div>
@@ -372,7 +373,7 @@ footer a:hover { color: var(--gold); }
       </ul>
     </div>
     <div class="art reveal">
-      <div class="phone"><img src="assets/screens/review.webp" alt="Move-by-move review with labels" loading="lazy" width="540" height="1105"></div>
+      <div class="phone"><img src="assets/screens/review.webp" alt="Move-by-move review with labels" loading="lazy" width="540" height="1096"></div>
       <div class="phone"><img src="assets/screens/summary.webp" alt="Review summary with accuracy for White and Black" loading="lazy" width="540" height="1105"></div>
     </div>
   </div>
@@ -405,7 +406,7 @@ footer a:hover { color: var(--gold); }
     </div>
     <div class="art reveal">
       <div class="phone"><img src="assets/screens/puzzles.webp" alt="Puzzle Journey with levels on a chessboard road" loading="lazy" width="540" height="1105"></div>
-      <div class="phone"><img src="assets/screens/puzzle_hint.webp" alt="A mate-in-two puzzle with a hint" loading="lazy" width="540" height="1105"></div>
+      <div class="phone"><img src="assets/screens/puzzle_hint.webp" alt="A mate-in-two puzzle with a hint" loading="lazy" width="540" height="945"></div>
     </div>
   </div>
 </section>
@@ -443,7 +444,7 @@ footer a:hover { color: var(--gold); }
       </ul>
     </div>
     <div class="art one reveal">
-      <div class="phone"><img src="assets/screens/play.webp" alt="Playing the computer at Intermediate level" loading="lazy" width="540" height="1105"></div>
+      <div class="phone"><img src="assets/screens/play.webp" alt="Playing the computer at Intermediate level" loading="lazy" width="540" height="1094"></div>
     </div>
   </div>
 </section>
@@ -524,7 +525,7 @@ footer a:hover { color: var(--gold); }
 
 <section class="final board-bg" aria-labelledby="final-title">
   <div class="wrap reveal">
-    <img class="logo" src="assets/logo.webp" alt="BEST CHESS app icon" width="110" height="110" loading="lazy">
+    <img class="logo" src="assets/logo.webp" alt="BEST CHESS app icon" width="128" height="128" loading="lazy">
     <h2 id="final-title">Your next game starts here</h2>
     <p class="lead" style="color:var(--muted)">Free on Android. Offline. No ads. No account.</p>
     <div class="cta">

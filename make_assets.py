@@ -7,6 +7,16 @@ BR = r"D:\Development\BestChess\best_chess\branding"
 for n in ["review", "summary", "pgn", "puzzles", "puzzle_hint", "academy", "lesson", "play", "settings", "boards", "home"]:
     im = Image.open(os.path.join(RAW, f"p_{n}.png")).convert("RGB")
     im = im.crop((0, 120, im.width, im.height - 70))  # status bar, gesture bar
+    # Trim the empty area at the bottom (rows of one flat colour), keeping a
+    # small margin, so no screen shows a blank band under its content.
+    import numpy as np
+    px = np.asarray(im).astype(int)
+    bg = px[-1, im.width // 2]
+    flat = (np.abs(px - bg).sum(axis=2) < 18).mean(axis=1) > 0.985
+    end = len(flat)
+    while end > im.height * 0.6 and flat[end - 1]:
+        end -= 1
+    im = im.crop((0, 0, im.width, min(im.height, end + 36)))
     im = im.resize((540, int(im.height * 540 / im.width)), Image.LANCZOS)
     im.save(os.path.join(W, "screens", f"{n}.webp"), quality=82, method=6)
 logo = Image.open(os.path.join(BR, "best_chess_logo.png")).convert("RGBA")
