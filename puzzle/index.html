@@ -36,6 +36,16 @@
 .pb .sel { box-shadow: inset 0 0 0 4px #e2b13c, inset 0 0 0 999px rgba(226,177,60,.35); }
 .pb .bad { animation: bad .4s; }
 .pb .lift img { opacity: .25; }
+.pb .dot::after { content: ""; position: absolute; left: 36%; top: 36%; width: 28%; height: 28%;
+  border-radius: 50%; background: rgba(20, 30, 10, .28); }
+.pb .cap::after { content: ""; position: absolute; inset: 4%; border-radius: 50%;
+  border: 5px solid rgba(20, 30, 10, .28); }
+.tick { position: absolute; right: 2%; top: 2%; width: 58%; height: 58%; border-radius: 50%;
+  background: #5c9a35; border: 3px solid #fff; display: grid; place-items: center; z-index: 3;
+  box-shadow: 0 3px 8px rgba(0,0,0,.35); animation: pop .35s cubic-bezier(.2,1.6,.4,1); }
+.tick svg { width: 62%; height: 62%; }
+.pb .s.top { z-index: 2; overflow: visible; }
+@keyframes pop { from { transform: scale(0); } to { transform: scale(1); } }
 .ghost { position: fixed; pointer-events: none; z-index: 50; filter: drop-shadow(0 10px 12px rgba(0,0,0,.45)); }
 @keyframes bad { 0%,100% { transform: none; } 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
 .info { background: var(--espresso-2); border: var(--line) solid var(--gold); border-radius: var(--radius); padding: 22px; display: grid; gap: 12px; }
@@ -92,6 +102,7 @@
   const DAY = 86400000, EPOCH = Date.UTC(2026, 0, 1);
   const todayIdx = () => { const n = new Date(); return Math.floor((Date.UTC(n.getFullYear(), n.getMonth(), n.getDate()) - EPOCH) / DAY); };
   let all = [], day = todayIdx(), P, grid, side, flip, step, line, sel = null, last = null, busy = false;
+  let turn = 'w', castle = '', ep = '-', solved = false;
   const parse = (fen) => {
     const g = {}; const rows = fen.split(' ')[0].split('/');
     rows.forEach((row, r) => { let f = 0; for (const ch of row) { if (/\d/.test(ch)) f += +ch; else { g['abcdefgh'[f] + (8 - r)] = (ch === ch.toUpperCase() ? 'w' : 'b') + ch.toUpperCase(); f++; } } });
@@ -109,8 +120,82 @@
     delete grid[from];
     grid[to] = uci.length > 4 ? pc[0] + uci[4].toUpperCase() : pc;
     last = [from, to];
+    ep = pc[1] === 'P' && Math.abs(+to[1] - +from[1]) === 2 ? from[0] + ((+from[1] + +to[1]) / 2) : '-';
+    if (pc[1] === 'K') castle = castle.replace(pc[0] === 'w' ? /[KQ]/g : /[kq]/g, '');
+    for (const [sq, right] of [['h1', 'K'], ['a1', 'Q'], ['h8', 'k'], ['a8', 'q']]) {
+      if (from === sq || to === sq) castle = castle.replace(right, '');
+    }
+    turn = turn === 'w' ? 'b' : 'w';
+  };
+
+  // ------------------------------------------------ legal moves (for the dots)
+  const F = 'abcdefgh';
+  const at = (f, r) => (f >= 0 && f < 8 && r >= 1 && r <= 8 ? F[f] + r : null);
+  const attacked = (g, sq, by) => {
+    const f = F.indexOf(sq[0]), r = +sq[1];
+    const is = (s, t) => s && g[s] === by + t;
+    const pr = by === 'w' ? r - 1 : r + 1;
+    if (is(at(f - 1, pr), 'P') || is(at(f + 1, pr), 'P')) return true;
+    for (const [df, dr] of [[1,2],[2,1],[2,-1],[1,-2],[-1,-2],[-2,-1],[-2,1],[-1,2]]) if (is(at(f + df, r + dr), 'N')) return true;
+    for (let df = -1; df <= 1; df++) for (let dr = -1; dr <= 1; dr++) if ((df || dr) && is(at(f + df, r + dr), 'K')) return true;
+    const rays = (dirs, types) => dirs.some(([df, dr]) => {
+      for (let k = 1; k < 8; k++) {
+        const s = at(f + df * k, r + dr * k); if (!s) return false;
+        if (g[s]) return g[s][0] === by && types.includes(g[s][1]);
+      }
+      return false;
+    });
+    return rays([[1,0],[-1,0],[0,1],[0,-1]], 'RQ') || rays([[1,1],[1,-1],[-1,1],[-1,-1]], 'BQ');
+  };
+  const legalFrom = (from) => {
+    const pc = grid[from]; if (!pc || pc[0] !== turn) return [];
+    const me = pc[0], foe = me === 'w' ? 'b' : 'w', f = F.indexOf(from[0]), r = +from[1], out = [];
+    const add = (s) => { if (s && (!grid[s] || grid[s][0] === foe)) out.push(s); };
+    const slide = (dirs) => dirs.forEach(([df, dr]) => {
+      for (let k = 1; k < 8; k++) { const s = at(f + df * k, r + dr * k); if (!s) break; add(s); if (grid[s]) break; }
+    });
+    switch (pc[1]) {
+      case 'P': {
+        const d = me === 'w' ? 1 : -1, one = at(f, r + d);
+        if (one && !grid[one]) {
+          out.push(one);
+          const two = at(f, r + 2 * d);
+          if ((me === 'w' ? r === 2 : r === 7) && two && !grid[two]) out.push(two);
+        }
+        for (const df of [-1, 1]) {
+          const s = at(f + df, r + d);
+          if (s && ((grid[s] && grid[s][0] === foe) || s === ep)) out.push(s);
+        }
+        break;
+      }
+      case 'N': [[1,2],[2,1],[2,-1],[1,-2],[-1,-2],[-2,-1],[-2,1],[-1,2]].forEach(([df, dr]) => add(at(f + df, r + dr))); break;
+      case 'B': slide([[1,1],[1,-1],[-1,1],[-1,-1]]); break;
+      case 'R': slide([[1,0],[-1,0],[0,1],[0,-1]]); break;
+      case 'Q': slide([[1,0],[-1,0],[0,1],[0,-1],[1,1],[1,-1],[-1,1],[-1,-1]]); break;
+      case 'K': {
+        for (let df = -1; df <= 1; df++) for (let dr = -1; dr <= 1; dr++) if (df || dr) add(at(f + df, r + dr));
+        const home = me === 'w' ? '1' : '8';
+        if (from === 'e' + home && !attacked(grid, from, foe)) {
+          const [K, Q] = me === 'w' ? ['K', 'Q'] : ['k', 'q'];
+          if (castle.includes(K) && !grid['f' + home] && !grid['g' + home] &&
+              !attacked(grid, 'f' + home, foe) && !attacked(grid, 'g' + home, foe)) out.push('g' + home);
+          if (castle.includes(Q) && !grid['d' + home] && !grid['c' + home] && !grid['b' + home] &&
+              !attacked(grid, 'd' + home, foe) && !attacked(grid, 'c' + home, foe)) out.push('c' + home);
+        }
+        break;
+      }
+    }
+    // Only moves that leave your own king safe.
+    return out.filter((to) => {
+      const g = { ...grid };
+      if (pc[1] === 'P' && to === ep) delete g[to[0] + from[1]];
+      delete g[from]; g[to] = pc;
+      const king = Object.keys(g).find((s) => g[s] === me + 'K');
+      return king && !attacked(g, king, foe);
+    });
   };
   const render = () => {
+    const targets = sel && !done() ? legalFrom(sel) : [];
     const b = $('board'); b.innerHTML = '';
     for (let r = 0; r < 8; r++) for (let c = 0; c < 8; c++) {
       const file = 'abcdefgh'[flip ? 7 - c : c], rank = flip ? r + 1 : 8 - r, sq = file + rank;
@@ -118,8 +203,15 @@
       d.className = 's ' + (((7 - (rank - 1)) + 'abcdefgh'.indexOf(file)) % 2 ? 'd' : 'l');
       if (last && last.includes(sq)) d.classList.add('last');
       if (sel === sq) d.classList.add('sel');
+      if (targets.includes(sq)) d.classList.add(grid[sq] || (ep === sq && grid[sel]?.[1] === 'P') ? 'cap' : 'dot');
       d.style.left = c * 12.5 + '%'; d.style.top = r * 12.5 + '%';
       d.dataset.sq = sq; d.setAttribute('role', 'gridcell'); d.setAttribute('aria-label', sq + (grid[sq] ? ' ' + grid[sq] : ''));
+      if (solved && last && last[1] === sq) {
+        d.classList.add('top');
+        const t = document.createElement('div'); t.className = 'tick'; t.setAttribute('aria-label', 'Solved');
+        t.innerHTML = '<svg viewBox="0 0 24 24"><path d="M5 12.5l4.2 4.2L19 7" fill="none" stroke="#fff" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+        d.appendChild(t);
+      }
       if (grid[sq]) { const im = document.createElement('img'); im.src = '../assets/pieces/' + grid[sq] + '.webp'; im.alt = ''; d.appendChild(im); }
       d.onclick = () => { if (dragged) { dragged = false; return; } tap(sq, d); };
       d.addEventListener('pointerdown', (ev) => startDrag(ev, sq, d));
@@ -129,10 +221,10 @@
   const msg = (t, cls) => { const m = $('msg'); m.textContent = t; m.className = 'msg' + (cls ? ' ' + cls : ''); };
   const done = () => step >= line.length;
   const reply = () => {
-    if (done()) { msg('Solved! Well played.', 'ok'); $('hint').disabled = true; return; }
+    if (done()) { { solved = true; render(); msg('Solved! Well played.', 'ok'); } $('hint').disabled = true; return; }
     busy = true;
     setTimeout(() => { apply(line[step]); step++; busy = false; render();
-      if (done()) { msg('Solved! Well played.', 'ok'); $('hint').disabled = true; } else msg('Correct! Keep going.', 'ok'); }, 500);
+      if (done()) { { solved = true; render(); msg('Solved! Well played.', 'ok'); } $('hint').disabled = true; } else msg('Correct! Keep going.', 'ok'); }, 500);
   };
   const tryMove = (from, to, el) => {
     const want = line[step];
@@ -179,10 +271,12 @@
   document.addEventListener('pointercancel', () => { if (drag?.ghost) { drag.ghost.remove(); drag.el.classList.remove('lift'); } drag = null; });
   const load = () => {
     const n = all.length, i = ((day % n) + n) % n; P = all[i];
+    const fp = P.f.split(' ');
+    turn = fp[1]; castle = fp[2] === '-' ? '' : fp[2]; ep = fp[3] || '-';
     grid = parse(P.f); last = null; apply(P.s);
     const parts = P.f.split(' ');
     side = parts[1] === 'w' ? 'b' : 'w'; flip = side === 'b';
-    line = P.l.split(' '); step = 0; sel = null; busy = false;
+    line = P.l.split(' '); step = 0; sel = null; busy = false; solved = false;
     const d = new Date(EPOCH + day * DAY);
     $('date').textContent = 'Puzzle for ' + d.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' });
     const themes = P.t.split(' ').map((t) => THEMES[t]).filter(Boolean);
@@ -192,6 +286,8 @@
     $('hint').disabled = false; $('next').disabled = day >= todayIdx();
     render();
   };
+  // For checking the dots against the app's own move rules (tests).
+  window.__puzzleCheck = { legalFrom, setState: (g, t, c, e) => { grid = g; turn = t; castle = c; ep = e; } };
   $('hint').onclick = () => { if (busy || done()) return; apply(line[step]); step++; render(); msg('That was the move.', ''); reply(); };
   $('retry').onclick = load;
   $('prev').onclick = () => { day--; load(); };
