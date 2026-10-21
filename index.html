@@ -1,18 +1,18 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-live="false">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>BEST CHESS — Free Chess App: Unlimited Game Reviews &amp; Puzzles, Offline, No Ads</title>
 <meta name="description" content="BEST CHESS is a free Android chess app: unlimited game reviews with a strong engine, puzzles with no daily limit, a chess academy from beginner to master, and play vs computer. Offline, no ads, no account.">
 <meta name="theme-color" content="#16130f">
-<!-- SITE_URL: replace https://SITE_URL/ below with the final address before publishing -->
-<link rel="canonical" href="https://SITE_URL/">
+<!-- Live switch: data-live="false" shows Coming soon; "true" shows the Google Play buttons. -->
+<link rel="canonical" href="https://bestchessapp.github.io/">
 <meta property="og:type" content="website">
 <meta property="og:title" content="BEST CHESS — Unlimited game reviews and puzzles. Offline, no ads.">
 <meta property="og:description" content="Review every game, solve puzzles with no daily limit and learn chess step by step. Free on Android.">
-<meta property="og:image" content="https://SITE_URL/assets/og.png">
-<meta property="og:url" content="https://SITE_URL/">
+<meta property="og:image" content="https://bestchessapp.github.io/assets/og.png">
+<meta property="og:url" content="https://bestchessapp.github.io/">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
 <link rel="icon" type="image/png" href="assets/favicon.png">
@@ -27,10 +27,10 @@
   "applicationCategory": "GameApplication",
   "applicationSubCategory": "Board game",
   "description": "Free chess app with unlimited game reviews, puzzles with no daily limit, a chess academy and play vs computer. Works offline, no ads, no account.",
-  "url": "https://SITE_URL/",
+  "url": "https://bestchessapp.github.io/",
   "downloadUrl": "https://play.google.com/store/apps/details?id=com.rg.bestchess",
   "installUrl": "https://play.google.com/store/apps/details?id=com.rg.bestchess",
-  "image": "https://SITE_URL/assets/og.png",
+  "image": "https://bestchessapp.github.io/assets/og.png",
   "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
 }
 </script>
@@ -292,6 +292,14 @@ footer a:hover { color: var(--gold); }
 .center { text-align: center; }
 .center .lead { margin-inline: auto; }
 
+/* Coming soon / live switch */
+html[data-live="false"] .when-live { display: none !important; }
+html[data-live="true"] .when-soon { display: none !important; }
+.btn-soon { background: var(--espresso-2); color: var(--gold); border-color: var(--gold); cursor: default; }
+.btn-soon:hover { transform: none; }
+.btn-ig { border-color: var(--ivory); color: var(--ivory); }
+.pill-soon { font-weight: 800; font-size: 14px; color: var(--gold); border: 2px solid var(--gold); padding: 7px 12px; border-radius: 999px; white-space: nowrap; }
+
 /* Reveal on scroll */
 .reveal { opacity: 0; transform: translateY(24px); transition: opacity .7s ease, transform .7s ease; }
 .reveal.in { opacity: 1; transform: none; }
@@ -317,7 +325,7 @@ footer a:hover { color: var(--gold); }
       <a class="hide-m" href="#puzzles">Puzzles</a>
       <a class="hide-m" href="#academy">Academy</a>
       <a class="hide-m" href="#faq">FAQ</a>
-      <a class="btn btn-play btn-sm" href="https://play.google.com/store/apps/details?id=com.rg.bestchess">Download</a>
+      <a class="btn btn-play btn-sm when-live" href="https://play.google.com/store/apps/details?id=com.rg.bestchess">Download</a><span class="pill-soon when-soon">Coming soon</span>
     </nav>
   </div>
 </header>
@@ -331,10 +339,12 @@ footer a:hover { color: var(--gold); }
       <h1 id="hero-title">Review every game.<br><em>Solve without limits.</em></h1>
       <p class="lead">BEST CHESS is a free chess app for Android with unlimited game reviews, puzzles with no daily limit and a chess academy from beginner to master. It works offline, with no ads and no account.</p>
       <div class="cta">
-        <a class="btn btn-play" href="https://play.google.com/store/apps/details?id=com.rg.bestchess">
+        <a class="btn btn-play when-live" href="https://play.google.com/store/apps/details?id=com.rg.bestchess">
           <svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><path fill="#fff" d="M4 2.5v19l16-9.5z"/></svg>
           <span class="t"><small>Free on Android</small>Download BEST CHESS</span>
         </a>
+        <span class="btn btn-soon when-soon"><span class="t"><small>Free on Android</small>Coming soon to Google Play</span></span>
+        <a class="btn btn-ig when-soon" href="https://www.instagram.com/rgplayzchess/">Follow on Instagram</a>
         <a class="btn btn-line" href="#review">See what it does</a>
       </div>
       <ul class="ticks">
@@ -539,12 +549,14 @@ footer a:hover { color: var(--gold); }
   <div class="wrap reveal">
     <img class="logo" src="assets/logo.webp" alt="BEST CHESS app icon" width="128" height="128" loading="lazy">
     <h2 id="final-title">Your next game starts here</h2>
-    <p class="lead" style="color:var(--muted)">Free on Android. Offline. No ads. No account.</p>
+    <p class="lead" style="color:var(--muted)"><span class="when-live">Free on Android. Offline. No ads. No account.</span><span class="when-soon">Coming soon, free on Android. Follow on Instagram to know the day it lands.</span></p>
     <div class="cta">
-      <a class="btn btn-play" href="https://play.google.com/store/apps/details?id=com.rg.bestchess">
+      <a class="btn btn-play when-live" href="https://play.google.com/store/apps/details?id=com.rg.bestchess">
         <svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><path fill="#fff" d="M4 2.5v19l16-9.5z"/></svg>
         <span class="t"><small>Free on Android</small>Download BEST CHESS</span>
       </a>
+      <span class="btn btn-soon when-soon"><span class="t"><small>Free on Android</small>Coming soon to Google Play</span></span>
+      <a class="btn btn-ig when-soon" href="https://www.instagram.com/rgplayzchess/">Follow on Instagram</a>
     </div>
   </div>
 </section>
@@ -553,7 +565,7 @@ footer a:hover { color: var(--gold); }
 <footer>
   <div class="wrap">
     <nav>
-      <a href="https://play.google.com/store/apps/details?id=com.rg.bestchess">Google Play</a>
+      <a class="when-live" href="https://play.google.com/store/apps/details?id=com.rg.bestchess">Google Play</a>
       <a href="https://rgxyzrg-hue.github.io/bestchess-privacy/">Privacy policy</a>
       <a href="mailto:rgplayzchess@gmail.com">Contact: rgplayzchess@gmail.com</a>
       <a href="https://www.instagram.com/rgplayzchess/">Instagram</a>
