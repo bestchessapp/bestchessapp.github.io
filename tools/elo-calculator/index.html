@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en" data-live="false">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Elo Rating Calculator: See how many rating points a game is worth | BEST CHESS</title>
+<meta name="description" content="Free chess Elo calculator: enter your rating, your opponent&#x27;s rating and the result to see your expected score and rating change. FIDE K-factors explained.">
+<meta name="theme-color" content="#16130f">
+<link rel="canonical" href="https://bestchessapp.github.io/tools/elo-calculator/">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Elo Rating Calculator: See how many rating points a game is worth">
+<meta property="og:description" content="Free chess Elo calculator: enter your rating, your opponent&#x27;s rating and the result to see your expected score and rating change. FIDE K-factors explained.">
+<meta property="og:image" content="https://bestchessapp.github.io/assets/og.png">
+<meta property="og:url" content="https://bestchessapp.github.io/tools/elo-calculator/">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+<link rel="apple-touch-icon" href="../../assets/apple-touch-icon.png">
+<link rel="stylesheet" href="../../assets/site.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "Elo Rating Calculator | BEST CHESS", "description": "Free chess Elo calculator: enter your rating, your opponent's rating and the result to see your expected score and rating change. FIDE K-factors explained.", "url": "https://bestchessapp.github.io/tools/elo-calculator/", "applicationCategory": "GameApplication", "operatingSystem": "Any", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}</script>
+</head>
+<body>
+<header class="top"><div class="wrap">
+<a class="brand" href="../../" aria-label="BEST CHESS home"><svg class="mark" viewBox="0 0 64 40" aria-hidden="true"><path fill="currentColor" d="M4 10a4 4 0 1 1 3.6 4l5.4 13 12-15a4 4 0 1 1 14 0l12 15 5.4-13A4 4 0 1 1 60 10l-6 22H10z"/><rect x="10" y="34" width="44" height="6" rx="2" fill="currentColor"/></svg><span>BEST CHESS</span></a>
+<nav class="nav"><a class="hide-m" href="../../learn/">Guides</a><a class="hide-m" href="../../puzzle/">Daily Puzzle</a><a class="hide-m" href="../../tools/">Tools</a>
+<a class="btn btn-play btn-sm when-live" href="https://play.google.com/store/apps/details?id=com.rg.bestchess">Download</a><span class="pill-soon when-soon">Coming soon</span></nav>
+</div></header>
+<style>
+.calc { display: grid; gap: 16px; background: var(--espresso-2); border: var(--line) solid var(--gold);
+  border-radius: var(--radius); padding: 22px; max-width: 640px; }
+.calc label { display: grid; gap: 6px; font-weight: 800; color: var(--ivory); }
+.calc input, .calc select { font: 700 20px var(--sans); padding: 12px; border-radius: 12px;
+  border: 2px solid rgba(212,174,110,.6); background: var(--espresso); color: var(--ivory); width: 100%; }
+.seg { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.seg button { font: 800 17px var(--sans); padding: 12px; border-radius: 12px; cursor: pointer;
+  border: 2px solid rgba(212,174,110,.5); background: var(--espresso); color: var(--ivory); }
+.seg button.on { background: var(--gold); color: var(--ink); border-color: var(--gold); }
+.out { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.out div { background: var(--espresso); border-radius: 14px; padding: 14px; text-align: center; border: 2px solid rgba(212,174,110,.35); }
+.out b { display: block; font: 900 28px var(--sans); color: var(--gold); }
+.out span { color: var(--muted); font-size: 14px; font-weight: 700; }
+.table { width: 100%; border-collapse: collapse; margin-top: 6px; }
+.table td, .table th { padding: 8px; border-bottom: 1px solid rgba(212,174,110,.25); text-align: left; color: var(--ivory); }
+@media (max-width: 520px) { .out { grid-template-columns: 1fr; } }
+</style>
+<main class="guide board-bg"><div class="wrap">
+<div class="crumbs"><a href="../../">Home</a> › <a href="../">Chess Tools</a> › Elo Calculator</div>
+<h1>Elo Rating Calculator</h1>
+<p class="lead">Enter both ratings and the result to see your expected score and how many rating points the game is worth.</p>
+<div class="calc">
+  <label>Your rating <input id="ra" type="number" inputmode="numeric" value="1500" min="100" max="3500"></label>
+  <label>Opponent's rating <input id="rb" type="number" inputmode="numeric" value="1600" min="100" max="3500"></label>
+  <div><div style="font-weight:800;color:var(--ivory);margin-bottom:6px">Result</div>
+    <div class="seg" id="res" role="group" aria-label="Result">
+      <button data-s="1" class="on">Win</button><button data-s="0.5">Draw</button><button data-s="0">Loss</button>
+    </div></div>
+  <label>K-factor
+    <select id="k">
+      <option value="40">40: new players (under 30 games) and juniors under 2300</option>
+      <option value="20" selected>20: most players</option>
+      <option value="10">10: players who have reached 2400</option>
+    </select></label>
+  <div class="out" aria-live="polite">
+    <div><b id="exp">36%</b><span>Expected score</span></div>
+    <div><b id="chg">+13</b><span>Rating change</span></div>
+    <div><b id="new">1513</b><span>New rating</span></div>
+  </div>
+  <table class="table" aria-label="All results"><tr><th>If you…</th><th>Change</th><th>New rating</th></tr>
+    <tbody id="all"></tbody></table>
+</div>
+<h2>How the Elo system works</h2>
+<p>Every player has a rating. Before a game, the difference between the two ratings gives an expected score: the stronger player is expected to score more. After the game, your rating moves by the K-factor times the difference between what you scored and what you were expected to score.</p>
+<p><b>Expected score:</b> E = 1 / (1 + 10<sup>(R<sub>opponent</sub> − R<sub>you</sub>) / 400</sup>). <b>Rating change:</b> K × (S − E), where S is 1 for a win, 0.5 for a draw and 0 for a loss.</p>
+<p>Beat a stronger player and you gain a lot; lose to a weaker one and you lose a lot. A 200-point favourite is expected to score about 76%. Following the FIDE rule, a rating difference of more than 400 points is counted as 400.</p>
+<h2>Which K-factor?</h2>
+<p>FIDE uses 40 for new players until they have played 30 rated games, and for players under 18 rated below 2300; 20 for most players; and 10 once a player has reached 2400. Online sites use their own systems, so your rating there may move differently.</p>
+<div class="cta-box">
+<h2>Practise it in BEST CHESS</h2>
+<p style="margin-inline:auto">Play every move yourself in the free Chess Academy (Play vs Computer and Puzzles), solve puzzles with no daily limit, and review your games with a strong engine. Offline, no ads, no account.</p>
+<div class="cta">
+<a class="btn btn-play when-live" href="https://play.google.com/store/apps/details?id=com.rg.bestchess"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path fill="#fff" d="M4 2.5v19l16-9.5z"/></svg><span class="t"><small>Free on Android</small>Download BEST CHESS</span></a>
+<span class="btn btn-soon when-soon"><span class="t"><small>Free on Android</small>Coming soon to Google Play</span></span>
+<a class="btn btn-ig when-soon" href="https://www.instagram.com/rgplayzchess/">Follow on Instagram</a>
+</div></div>
+</div></main>
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  let s = 1;
+  const calc = () => {
+    const a = +$('ra').value || 0, b = +$('rb').value || 0, k = +$('k').value;
+    const d = Math.max(-400, Math.min(400, b - a));
+    const e = 1 / (1 + Math.pow(10, d / 400));
+    const ch = (x) => Math.round(k * (x - e));
+    const sign = (n) => (n > 0 ? '+' : '') + n;
+    $('exp').textContent = Math.round(e * 100) + '%';
+    $('chg').textContent = sign(ch(s));
+    $('new').textContent = a + ch(s);
+    $('all').innerHTML = [['win', 1], ['draw', 0.5], ['lose', 0]]
+      .map(([n, x]) => `<tr><td>${n}</td><td>${sign(ch(x))}</td><td>${a + ch(x)}</td></tr>`).join('');
+  };
+  document.querySelectorAll('#res button').forEach((b) => b.onclick = () => {
+    document.querySelectorAll('#res button').forEach((x) => x.classList.toggle('on', x === b));
+    s = +b.dataset.s; calc();
+  });
+  ['ra', 'rb', 'k'].forEach((id) => $(id).addEventListener('input', calc));
+  calc();
+})();
+</script>
+<footer><div class="wrap">
+<nav><a href="../../">Home</a><a href="../../learn/">Chess Guides</a><a href="../../puzzle/">Daily Puzzle</a><a href="../../tools/">Chess Tools</a><a class="when-live" href="https://play.google.com/store/apps/details?id=com.rg.bestchess">Google Play</a>
+<a href="https://rgxyzrg-hue.github.io/bestchess-privacy/">Privacy policy</a><a href="mailto:rgplayzchess@gmail.com">Contact: rgplayzchess@gmail.com</a></nav>
+<div>© 2026 BEST CHESS. All rights reserved. Positions checked with Stockfish 15.1 (GNU GPL v3).</div>
+<div>Google Play and the Google Play logo are trademarks of Google LLC.</div>
+</div></footer>
+</body>
+</html>

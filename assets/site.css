@@ -1,7 +1,7 @@
 
 @font-face {
   font-family: "Playfair";
-  src: url("../fonts/PlayfairDisplay-VariableFont_wght.ttf") format("truetype");
+  src: url("fonts/PlayfairDisplay-VariableFont_wght.ttf") format("truetype");
   font-weight: 400 900;
   font-display: swap;
 }

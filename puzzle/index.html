@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en" data-live="false">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Daily Chess Puzzle: A New Puzzle Every Day | BEST CHESS</title>
+<meta name="description" content="A free chess puzzle every day. Find the best move, then check the solution step by step. Puzzles from the Lichess open database, from beginner to club level.">
+<meta name="theme-color" content="#16130f">
+<link rel="canonical" href="https://bestchessapp.github.io/puzzle/">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Daily Chess Puzzle: A New Puzzle Every Day">
+<meta property="og:description" content="A free chess puzzle every day. Find the best move, then check the solution step by step. Puzzles from the Lichess open database, from beginner to club level.">
+<meta property="og:image" content="https://bestchessapp.github.io/assets/og.png">
+<meta property="og:url" content="https://bestchessapp.github.io/puzzle/">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+<link rel="apple-touch-icon" href="../assets/apple-touch-icon.png">
+<link rel="stylesheet" href="../assets/site.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebPage", "name": "Daily Chess Puzzle", "description": "A free chess puzzle every day. Find the best move, then check the solution step by step. Puzzles from the Lichess open database, from beginner to club level.", "url": "https://bestchessapp.github.io/puzzle/"}</script>
+</head>
+<body>
+<header class="top"><div class="wrap">
+<a class="brand" href="../" aria-label="BEST CHESS home"><svg class="mark" viewBox="0 0 64 40" aria-hidden="true"><path fill="currentColor" d="M4 10a4 4 0 1 1 3.6 4l5.4 13 12-15a4 4 0 1 1 14 0l12 15 5.4-13A4 4 0 1 1 60 10l-6 22H10z"/><rect x="10" y="34" width="44" height="6" rx="2" fill="currentColor"/></svg><span>BEST CHESS</span></a>
+<nav class="nav"><a class="hide-m" href="../learn/">Guides</a><a class="hide-m" href="../puzzle/">Daily Puzzle</a><a class="hide-m" href="../tools/">Tools</a>
+<a class="btn btn-play btn-sm when-live" href="https://play.google.com/store/apps/details?id=com.rg.bestchess">Download</a><span class="pill-soon when-soon">Coming soon</span></nav>
+</div></header>
+<style>
+.pz { display: grid; grid-template-columns: minmax(0, 520px) minmax(0, 1fr); gap: 26px; align-items: start; }
+@media (max-width: 860px) { .pz { grid-template-columns: 1fr; } }
+.pb { position: relative; aspect-ratio: 1; width: 100%; border: 3px solid var(--gold); border-radius: 6px; overflow: hidden; touch-action: manipulation; }
+.pb .s { position: absolute; width: 12.5%; height: 12.5%; cursor: pointer; }
+.pb .l { background: #eeeed2; } .pb .d { background: #769656; }
+.pb .s img { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.pb .last { box-shadow: inset 0 0 0 999px rgba(246, 224, 94, .55); }
+.pb .sel { box-shadow: inset 0 0 0 4px #e2b13c, inset 0 0 0 999px rgba(226,177,60,.35); }
+.pb .bad { animation: bad .4s; }
+@keyframes bad { 0%,100% { transform: none; } 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
+.info { background: var(--espresso-2); border: var(--line) solid var(--gold); border-radius: var(--radius); padding: 22px; display: grid; gap: 12px; }
+.info h2 { margin: 0; }
+.msg { font: 800 20px var(--sans); color: var(--ivory); min-height: 1.5em; }
+.msg.ok { color: #9be07a; } .msg.no { color: #ff9b8f; }
+.meta { color: var(--muted); font-weight: 700; }
+.btns { display: flex; flex-wrap: wrap; gap: 10px; }
+.btns button { font: 800 16px var(--sans); padding: 12px 16px; border-radius: 12px; cursor: pointer;
+  border: 2px solid var(--gold); background: var(--espresso); color: var(--gold); }
+.btns button.main { background: var(--green); border-color: var(--green); color: #fff; }
+.btns button:disabled { opacity: .4; cursor: default; }
+</style>
+<main class="guide board-bg"><div class="wrap" style="width:min(1160px, 100% - 32px)">
+<div class="crumbs"><a href="../">Home</a> › Daily Chess Puzzle</div>
+<h1>Daily Chess Puzzle</h1>
+<p class="lead" id="date">A new puzzle every day.</p>
+<div class="pz">
+  <div><div class="pb" id="board" role="grid" aria-label="Puzzle board"></div></div>
+  <div class="info">
+    <h2 id="title">Find the best move</h2>
+    <div class="meta" id="meta"></div>
+    <div class="msg" id="msg" aria-live="polite">Tap a piece, then the square to move it to.</div>
+    <div class="btns">
+      <button class="main" id="hint">Show next move</button>
+      <button id="retry">Try again</button>
+    </div>
+    <div class="btns">
+      <button id="prev">← Previous day</button>
+      <button id="next">Next day →</button>
+    </div>
+    <p class="meta" style="font-size:14px">Puzzles from the Lichess open database (CC0). Ratings are approximate.</p>
+  </div>
+</div>
+<h2>How to solve chess puzzles</h2>
+<p>Start with checks, captures and threats: look at every check first, then every capture, then moves that attack something. Ask what your opponent's last move changed, and which of their pieces are loose or overloaded. Solve the whole line in your head before you move.</p>
+<p>Want more than one a day? BEST CHESS has puzzles with no daily limit, a puzzle rating, and puzzles by theme.</p>
+<div class="cta-box">
+<h2>Practise it in BEST CHESS</h2>
+<p style="margin-inline:auto">Play every move yourself in the free Chess Academy (Puzzles), solve puzzles with no daily limit, and review your games with a strong engine. Offline, no ads, no account.</p>
+<div class="cta">
+<a class="btn btn-play when-live" href="https://play.google.com/store/apps/details?id=com.rg.bestchess"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path fill="#fff" d="M4 2.5v19l16-9.5z"/></svg><span class="t"><small>Free on Android</small>Download BEST CHESS</span></a>
+<span class="btn btn-soon when-soon"><span class="t"><small>Free on Android</small>Coming soon to Google Play</span></span>
+<a class="btn btn-ig when-soon" href="https://www.instagram.com/rgplayzchess/">Follow on Instagram</a>
+</div></div>
+</div></main>
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const THEMES = { br: 'Back Rank', fk: 'Fork', pn: 'Pin', sk: 'Skewer', da: 'Discovered Attack', pr: 'Promotion',
+    wm: 'Win Material', sm: 'Smothered Mate', dc: 'Double Check', df: 'Deflection', at: 'Attraction',
+    cd: 'Removing the Defender', tp: 'Trapped Piece', iz: 'Zwischenzug', xr: 'X-Ray Attack', if: 'Interference',
+    cl: 'Clearance', qm: 'Quiet Move', sc: 'Sacrifice', zz: 'Zugzwang', m1: 'Mate in 1', m2: 'Mate in 2', m3: 'Mate in 3' };
+  const DAY = 86400000, EPOCH = Date.UTC(2026, 0, 1);
+  const todayIdx = () => { const n = new Date(); return Math.floor((Date.UTC(n.getFullYear(), n.getMonth(), n.getDate()) - EPOCH) / DAY); };
+  let all = [], day = todayIdx(), P, grid, side, flip, step, line, sel = null, last = null, busy = false;
+  const parse = (fen) => {
+    const g = {}; const rows = fen.split(' ')[0].split('/');
+    rows.forEach((row, r) => { let f = 0; for (const ch of row) { if (/\d/.test(ch)) f += +ch; else { g['abcdefgh'[f] + (8 - r)] = (ch === ch.toUpperCase() ? 'w' : 'b') + ch.toUpperCase(); f++; } } });
+    return g;
+  };
+  const apply = (uci) => {
+    const from = uci.slice(0, 2), to = uci.slice(2, 4), pc = grid[from];
+    if (!pc) return;
+    if (pc[1] === 'K' && Math.abs(from.charCodeAt(0) - to.charCodeAt(0)) === 2) {
+      const rank = from[1], kside = to[0] === 'g';
+      const rf = (kside ? 'h' : 'a') + rank, rt = (kside ? 'f' : 'd') + rank;
+      grid[rt] = grid[rf]; delete grid[rf];
+    }
+    if (pc[1] === 'P' && from[0] !== to[0] && !grid[to]) delete grid[to[0] + from[1]];
+    delete grid[from];
+    grid[to] = uci.length > 4 ? pc[0] + uci[4].toUpperCase() : pc;
+    last = [from, to];
+  };
+  const render = () => {
+    const b = $('board'); b.innerHTML = '';
+    for (let r = 0; r < 8; r++) for (let c = 0; c < 8; c++) {
+      const file = 'abcdefgh'[flip ? 7 - c : c], rank = flip ? r + 1 : 8 - r, sq = file + rank;
+      const d = document.createElement('div');
+      d.className = 's ' + (((7 - (rank - 1)) + 'abcdefgh'.indexOf(file)) % 2 ? 'd' : 'l');
+      if (last && last.includes(sq)) d.classList.add('last');
+      if (sel === sq) d.classList.add('sel');
+      d.style.left = c * 12.5 + '%'; d.style.top = r * 12.5 + '%';
+      d.dataset.sq = sq; d.setAttribute('role', 'gridcell'); d.setAttribute('aria-label', sq + (grid[sq] ? ' ' + grid[sq] : ''));
+      if (grid[sq]) { const im = document.createElement('img'); im.src = '../assets/pieces/' + grid[sq] + '.webp'; im.alt = ''; d.appendChild(im); }
+      d.onclick = () => tap(sq, d);
+      b.appendChild(d);
+    }
+  };
+  const msg = (t, cls) => { const m = $('msg'); m.textContent = t; m.className = 'msg' + (cls ? ' ' + cls : ''); };
+  const done = () => step >= line.length;
+  const reply = () => {
+    if (done()) { msg('Solved! Well played.', 'ok'); $('hint').disabled = true; return; }
+    busy = true;
+    setTimeout(() => { apply(line[step]); step++; busy = false; render();
+      if (done()) { msg('Solved! Well played.', 'ok'); $('hint').disabled = true; } else msg('Correct! Keep going.', 'ok'); }, 500);
+  };
+  const tap = (sq, el) => {
+    if (busy || done()) return;
+    if (sel && sel !== sq && !(grid[sq] && grid[sq][0] === side)) {
+      const want = line[step];
+      if (want.slice(0, 4) === sel + sq) { apply(want); step++; sel = null; render(); reply(); }
+      else { el.classList.add('bad'); msg('Not the best move. Try again.', 'no'); sel = null; setTimeout(render, 400); }
+      return;
+    }
+    if (grid[sq] && grid[sq][0] === side) { sel = sel === sq ? null : sq; render(); }
+  };
+  const load = () => {
+    const n = all.length, i = ((day % n) + n) % n; P = all[i];
+    grid = parse(P.f); last = null; apply(P.s);
+    const parts = P.f.split(' ');
+    side = parts[1] === 'w' ? 'b' : 'w'; flip = side === 'b';
+    line = P.l.split(' '); step = 0; sel = null; busy = false;
+    const d = new Date(EPOCH + day * DAY);
+    $('date').textContent = 'Puzzle for ' + d.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' });
+    const themes = P.t.split(' ').map((t) => THEMES[t]).filter(Boolean);
+    $('title').textContent = (side === 'w' ? 'White' : 'Black') + ' to move: find the best move';
+    $('meta').textContent = 'Rating about ' + P.r + (themes.length ? ' · Theme: ' + themes.join(', ') : '');
+    msg("Your opponent's last move is highlighted. Tap a piece, then its square.");
+    $('hint').disabled = false; $('next').disabled = day >= todayIdx();
+    render();
+  };
+  $('hint').onclick = () => { if (busy || done()) return; apply(line[step]); step++; render(); msg('That was the move.', ''); reply(); };
+  $('retry').onclick = load;
+  $('prev').onclick = () => { day--; load(); };
+  $('next').onclick = () => { if (day < todayIdx()) { day++; load(); } };
+  fetch('puzzles.json').then((r) => r.json()).then((d) => { all = d; load(); }).catch(() => msg('Could not load the puzzle. Check your connection.', 'no'));
+})();
+</script>
+<footer><div class="wrap">
+<nav><a href="../">Home</a><a href="../learn/">Chess Guides</a><a href="../puzzle/">Daily Puzzle</a><a href="../tools/">Chess Tools</a><a class="when-live" href="https://play.google.com/store/apps/details?id=com.rg.bestchess">Google Play</a>
+<a href="https://rgxyzrg-hue.github.io/bestchess-privacy/">Privacy policy</a><a href="mailto:rgplayzchess@gmail.com">Contact: rgplayzchess@gmail.com</a></nav>
+<div>© 2026 BEST CHESS. All rights reserved. Positions checked with Stockfish 15.1 (GNU GPL v3).</div>
+<div>Google Play and the Google Play logo are trademarks of Google LLC.</div>
+</div></footer>
+</body>
+</html>

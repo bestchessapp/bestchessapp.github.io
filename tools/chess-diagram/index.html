@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en" data-live="false">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chess Diagram Maker: Turn a FEN into a board picture | BEST CHESS</title>
+<meta name="description" content="Free chess diagram maker: paste a FEN and download a clean board image (PNG) for books, worksheets, blogs and social media. Flip the board, add coordinates.">
+<meta name="theme-color" content="#16130f">
+<link rel="canonical" href="https://bestchessapp.github.io/tools/chess-diagram/">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Chess Diagram Maker: Turn a FEN into a board picture">
+<meta property="og:description" content="Free chess diagram maker: paste a FEN and download a clean board image (PNG) for books, worksheets, blogs and social media. Flip the board, add coordinates.">
+<meta property="og:image" content="https://bestchessapp.github.io/assets/og.png">
+<meta property="og:url" content="https://bestchessapp.github.io/tools/chess-diagram/">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+<link rel="apple-touch-icon" href="../../assets/apple-touch-icon.png">
+<link rel="stylesheet" href="../../assets/site.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "Chess Diagram Maker | BEST CHESS", "description": "Free chess diagram maker: paste a FEN and download a clean board image (PNG) for books, worksheets, blogs and social media. Flip the board, add coordinates.", "url": "https://bestchessapp.github.io/tools/chess-diagram/", "applicationCategory": "GameApplication", "operatingSystem": "Any", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}</script>
+</head>
+<body>
+<header class="top"><div class="wrap">
+<a class="brand" href="../../" aria-label="BEST CHESS home"><svg class="mark" viewBox="0 0 64 40" aria-hidden="true"><path fill="currentColor" d="M4 10a4 4 0 1 1 3.6 4l5.4 13 12-15a4 4 0 1 1 14 0l12 15 5.4-13A4 4 0 1 1 60 10l-6 22H10z"/><rect x="10" y="34" width="44" height="6" rx="2" fill="currentColor"/></svg><span>BEST CHESS</span></a>
+<nav class="nav"><a class="hide-m" href="../../learn/">Guides</a><a class="hide-m" href="../../puzzle/">Daily Puzzle</a><a class="hide-m" href="../../tools/">Tools</a>
+<a class="btn btn-play btn-sm when-live" href="https://play.google.com/store/apps/details?id=com.rg.bestchess">Download</a><span class="pill-soon when-soon">Coming soon</span></nav>
+</div></header>
+<style>
+.dm { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 420px); gap: 22px; align-items: start; }
+@media (max-width: 820px) { .dm { grid-template-columns: 1fr; } }
+.panel { background: var(--espresso-2); border: var(--line) solid var(--gold); border-radius: var(--radius); padding: 20px; display: grid; gap: 14px; }
+.panel textarea { font: 600 16px/1.4 ui-monospace, Consolas, monospace; padding: 12px; border-radius: 12px; min-height: 92px;
+  border: 2px solid rgba(212,174,110,.6); background: var(--espresso); color: var(--ivory); resize: vertical; }
+.panel label { color: var(--ivory); font-weight: 800; display: flex; gap: 10px; align-items: center; }
+.panel select { font: 700 16px var(--sans); padding: 8px; border-radius: 10px; background: var(--espresso); color: var(--ivory);
+  border: 2px solid rgba(212,174,110,.6); }
+.err { color: #ff9b8f; font-weight: 700; min-height: 1.4em; }
+#cv { width: 100%; height: auto; border-radius: 10px; box-shadow: 0 20px 40px rgba(0,0,0,.5); background: #222; }
+.row2 { display: flex; gap: 10px; flex-wrap: wrap; }
+.row2 button { font: 800 16px var(--sans); padding: 12px 16px; border-radius: 12px; cursor: pointer;
+  border: 2px solid var(--gold); background: var(--espresso); color: var(--gold); }
+.row2 button.main { background: var(--green); border-color: var(--green); color: #fff; }
+</style>
+<main class="guide board-bg"><div class="wrap" style="width:min(1160px, 100% - 32px)">
+<div class="crumbs"><a href="../../">Home</a> › <a href="../">Chess Tools</a> › Chess Diagram Maker</div>
+<h1>Chess Diagram Maker</h1>
+<p class="lead">Paste a position (FEN) and download a clean board picture for books, worksheets, blogs and posts. Everything happens in your browser.</p>
+<div class="dm">
+  <div><canvas id="cv" width="800" height="800" role="img" aria-label="Chess diagram preview"></canvas></div>
+  <div class="panel">
+    <label for="fen" style="display:block">Position (FEN)</label>
+    <textarea id="fen" spellcheck="false">r1bqkb1r/pppp1ppp/2n2n2/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 4 4</textarea>
+    <div class="err" id="err" aria-live="polite"></div>
+    <label><input type="checkbox" id="flip"> Black at the bottom</label>
+    <label><input type="checkbox" id="coords" checked> Show coordinates</label>
+    <label><input type="checkbox" id="tomove" checked> Show whose move it is</label>
+    <label>Board <select id="style">
+      <option value="green">Tournament green</option>
+      <option value="wood">Classic brown</option>
+      <option value="gray">Print grey</option>
+    </select></label>
+    <label>Size <select id="size">
+      <option value="600">600 px</option><option value="800" selected>800 px</option>
+      <option value="1200">1200 px</option><option value="1600">1600 px (print)</option>
+    </select></label>
+    <div class="row2">
+      <button class="main" id="dl">Download PNG</button>
+      <button id="start">Start position</button>
+      <button id="clear">Empty board</button>
+    </div>
+  </div>
+</div>
+<h2>What is a FEN?</h2>
+<p>FEN (Forsyth–Edwards Notation) describes a chess position in one line of text. It lists the pieces rank by rank from the eighth rank to the first: capital letters for White (K Q R B N P), small letters for Black, and numbers for empty squares. After a space comes whose move it is (w or b), then castling rights, the en passant square and two move counters.</p>
+<p>You can copy a FEN from most chess apps and websites, or set up any position on the board in BEST CHESS and copy it from there.</p>
+<div class="cta-box">
+<h2>Practise it in BEST CHESS</h2>
+<p style="margin-inline:auto">Play every move yourself in the free Chess Academy (Play vs Computer and Puzzles), solve puzzles with no daily limit, and review your games with a strong engine. Offline, no ads, no account.</p>
+<div class="cta">
+<a class="btn btn-play when-live" href="https://play.google.com/store/apps/details?id=com.rg.bestchess"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path fill="#fff" d="M4 2.5v19l16-9.5z"/></svg><span class="t"><small>Free on Android</small>Download BEST CHESS</span></a>
+<span class="btn btn-soon when-soon"><span class="t"><small>Free on Android</small>Coming soon to Google Play</span></span>
+<a class="btn btn-ig when-soon" href="https://www.instagram.com/rgplayzchess/">Follow on Instagram</a>
+</div></div>
+</div></main>
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const cv = $('cv'), ctx = cv.getContext('2d');
+  const STYLES = { green: ['#eeeed2', '#769656', '#5a7a3f'], wood: ['#f0d9b5', '#b58863', '#8b6340'], gray: ['#f2f2f2', '#b9b9b9', '#666'] };
+  const imgs = {};
+  const codes = ['wK','wQ','wR','wB','wN','wP','bK','bQ','bR','bB','bN','bP'];
+  let loaded = 0;
+  codes.forEach((c) => { const im = new Image(); im.onload = () => { if (++loaded === codes.length) draw(); }; im.src = `../../assets/pieces/${c}.webp`; imgs[c] = im; });
+  const clean = (t) => t.replace(/[​-‍⁠﻿]/g, '').replace(/[   \t\r\n]/g, ' ')
+    .replace(/[‐-―−]/g, '-').replace(/^\s*(\[\s*FEN\s+")?(FEN|Position)?\s*[:=]?\s*/i, '')
+    .replace(/"\s*\]\s*$/, '').replace(/^["“”]+|["“”]+$/g, '').replace(/\s*\/\s*/g, '/').trim();
+  const parse = (raw) => {
+    const t = clean(raw); if (!t) return { err: 'Paste a FEN.' };
+    const f = t.split(/\s+/), rows = f[0].split('/');
+    if (rows.length !== 8) return { err: `A position needs 8 rows separated by "/" (found ${rows.length}).` };
+    const grid = [];
+    for (let r = 0; r < 8; r++) {
+      const row = []; for (const ch of rows[r]) {
+        if (/[1-8]/.test(ch)) { for (let i = 0; i < +ch; i++) row.push(null); }
+        else if (/[kqrbnpKQRBNP]/.test(ch)) row.push((ch === ch.toUpperCase() ? 'w' : 'b') + ch.toUpperCase());
+        else return { err: `"${ch}" is not a piece letter.` };
+      }
+      if (row.length !== 8) return { err: `Row ${8 - r} has ${row.length} squares, not 8.` };
+      grid.push(row);
+    }
+    return { grid, side: (f[1] || 'w').toLowerCase() === 'b' ? 'b' : 'w' };
+  };
+  function draw() {
+    const p = parse($('fen').value);
+    $('err').textContent = p.err || '';
+    if (p.err) return;
+    const size = +$('size').value, flip = $('flip').checked, coords = $('coords').checked, tm = $('tomove').checked;
+    const [light, dark, ink] = STYLES[$('style').value];
+    const margin = coords ? Math.round(size * 0.05) : 0, foot = tm ? Math.round(size * 0.07) : 0;
+    const board = size - margin * 2, sq = board / 8;
+    cv.width = size; cv.height = size + foot;
+    ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, cv.width, cv.height);
+    for (let r = 0; r < 8; r++) for (let c = 0; c < 8; c++) {
+      const rr = flip ? 7 - r : r, cc = flip ? 7 - c : c;
+      ctx.fillStyle = (r + c) % 2 ? dark : light;
+      ctx.fillRect(margin + c * sq, margin + r * sq, sq, sq);
+      const pc = p.grid[rr][cc];
+      if (pc && imgs[pc].complete) ctx.drawImage(imgs[pc], margin + c * sq, margin + r * sq, sq, sq);
+    }
+    ctx.strokeStyle = ink; ctx.lineWidth = Math.max(2, size / 300); ctx.strokeRect(margin, margin, board, board);
+    if (coords) {
+      ctx.fillStyle = '#333'; ctx.font = `700 ${Math.round(margin * 0.55)}px system-ui, sans-serif`;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      for (let i = 0; i < 8; i++) {
+        const file = 'abcdefgh'[flip ? 7 - i : i], rank = flip ? i + 1 : 8 - i;
+        ctx.fillText(file, margin + i * sq + sq / 2, size - margin / 2);
+        ctx.fillText(String(rank), margin / 2, margin + i * sq + sq / 2);
+      }
+    }
+    if (tm) {
+      ctx.fillStyle = '#222'; ctx.font = `800 ${Math.round(foot * 0.45)}px system-ui, sans-serif`;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(p.side === 'w' ? 'White to move' : 'Black to move', size / 2, size + foot / 2);
+    }
+  }
+  ['fen', 'flip', 'coords', 'tomove', 'style', 'size'].forEach((id) => $(id).addEventListener('input', draw));
+  $('fen').addEventListener('input', () => { const p = parse($('fen').value); if (!p.err) $('flip').checked = p.side === 'b'; draw(); });
+  $('start').onclick = () => { $('fen').value = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'; $('flip').checked = false; draw(); };
+  $('clear').onclick = () => { $('fen').value = '8/8/8/8/8/8/8/8 w - - 0 1'; draw(); };
+  $('dl').onclick = () => {
+    if (parse($('fen').value).err) return;
+    const a = document.createElement('a'); a.download = 'chess-diagram.png'; a.href = cv.toDataURL('image/png'); a.click();
+  };
+})();
+</script>
+<footer><div class="wrap">
+<nav><a href="../../">Home</a><a href="../../learn/">Chess Guides</a><a href="../../puzzle/">Daily Puzzle</a><a href="../../tools/">Chess Tools</a><a class="when-live" href="https://play.google.com/store/apps/details?id=com.rg.bestchess">Google Play</a>
+<a href="https://rgxyzrg-hue.github.io/bestchess-privacy/">Privacy policy</a><a href="mailto:rgplayzchess@gmail.com">Contact: rgplayzchess@gmail.com</a></nav>
+<div>© 2026 BEST CHESS. All rights reserved. Positions checked with Stockfish 15.1 (GNU GPL v3).</div>
+<div>Google Play and the Google Play logo are trademarks of Google LLC.</div>
+</div></footer>
+</body>
+</html>

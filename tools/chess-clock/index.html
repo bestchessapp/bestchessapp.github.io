@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en" data-live="false">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chess Clock: Free online chess timer with increment | BEST CHESS</title>
+<meta name="description" content="Free online chess clock: Bullet, Blitz, Rapid or your own time, with increment. Works on any phone or computer, even offline. Tap to switch sides.">
+<meta name="theme-color" content="#16130f">
+<link rel="canonical" href="https://bestchessapp.github.io/tools/chess-clock/">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Chess Clock: Free online chess timer with increment">
+<meta property="og:description" content="Free online chess clock: Bullet, Blitz, Rapid or your own time, with increment. Works on any phone or computer, even offline. Tap to switch sides.">
+<meta property="og:image" content="https://bestchessapp.github.io/assets/og.png">
+<meta property="og:url" content="https://bestchessapp.github.io/tools/chess-clock/">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/svg+xml" href="../../assets/favicon.svg">
+<link rel="apple-touch-icon" href="../../assets/apple-touch-icon.png">
+<link rel="stylesheet" href="../../assets/site.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "Chess Clock | BEST CHESS", "description": "Free online chess clock: Bullet, Blitz, Rapid or your own time, with increment. Works on any phone or computer, even offline. Tap to switch sides.", "url": "https://bestchessapp.github.io/tools/chess-clock/", "applicationCategory": "GameApplication", "operatingSystem": "Any", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}}</script>
+</head>
+<body>
+<header class="top"><div class="wrap">
+<a class="brand" href="../../" aria-label="BEST CHESS home"><svg class="mark" viewBox="0 0 64 40" aria-hidden="true"><path fill="currentColor" d="M4 10a4 4 0 1 1 3.6 4l5.4 13 12-15a4 4 0 1 1 14 0l12 15 5.4-13A4 4 0 1 1 60 10l-6 22H10z"/><rect x="10" y="34" width="44" height="6" rx="2" fill="currentColor"/></svg><span>BEST CHESS</span></a>
+<nav class="nav"><a class="hide-m" href="../../learn/">Guides</a><a class="hide-m" href="../../puzzle/">Daily Puzzle</a><a class="hide-m" href="../../tools/">Tools</a>
+<a class="btn btn-play btn-sm when-live" href="https://play.google.com/store/apps/details?id=com.rg.bestchess">Download</a><span class="pill-soon when-soon">Coming soon</span></nav>
+</div></header>
+<style>
+.clock-page { padding: 24px 0 60px; }
+.presets { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0; }
+.presets button, .ctrl button { font: 800 16px var(--sans); padding: 10px 16px; border-radius: 12px;
+  border: 2px solid rgba(212,174,110,.5); background: var(--espresso-2); color: var(--ivory); cursor: pointer; }
+.presets button.on { border-color: var(--gold); background: var(--gold); color: var(--ink); }
+.custom { display: none; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 12px; color: var(--ivory); }
+.custom.show { display: flex; }
+.custom input { width: 80px; font: 700 18px var(--sans); padding: 8px; border-radius: 10px; border: 2px solid var(--gold);
+  background: var(--espresso-2); color: var(--ivory); }
+.clock { display: grid; grid-template-rows: 1fr auto 1fr; gap: 10px; height: min(78vh, 760px); min-height: 460px;
+  background: var(--espresso); border-radius: 22px; padding: 10px; }
+.clock:fullscreen { height: 100vh; border-radius: 0; }
+.side { border: 4px solid rgba(212,174,110,.35); border-radius: 18px; background: #2a231c; color: var(--ivory);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer;
+  user-select: none; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+.side .t { font: 900 clamp(56px, 16vw, 132px)/1 var(--sans); font-variant-numeric: tabular-nums; letter-spacing: -2px; }
+.side .m { font: 700 15px var(--sans); color: var(--muted); margin-top: 8px; }
+.side.top { transform: rotate(180deg); }
+.side.active { background: #5c9a35; border-color: #8fd162; color: #fff; }
+.side.active .m { color: #e7f5dc; }
+.side.low .t { color: #ffd2cf; }
+.side.active.low { background: #c0392b; border-color: #ff8a7a; }
+.side.flag { background: #7d1f16; border-color: #ff8a7a; }
+.ctrl { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+.ctrl button { min-width: 110px; }
+.note { color: var(--muted); font-size: 15px; margin-top: 12px; }
+</style>
+<main class="guide board-bg clock-page"><div class="wrap">
+<div class="crumbs"><a href="../../">Home</a> › <a href="../">Chess Tools</a> › Chess Clock</div>
+<h1>Chess Clock</h1>
+<p class="lead">A free chess timer for over-the-board games. Choose a time, put the phone between the players, and tap your side after each move.</p>
+<div class="presets" id="presets" role="group" aria-label="Time control"></div>
+<div class="custom" id="custom">
+  <label>Minutes <input id="cm" type="number" min="0" max="180" value="10"></label>
+  <label>Increment (s) <input id="ci" type="number" min="0" max="60" value="0"></label>
+  <button class="presets-apply" id="capply" style="font:800 16px var(--sans);padding:10px 16px;border-radius:12px;border:2px solid var(--gold);background:var(--gold);color:var(--ink)">Set</button>
+</div>
+<div class="clock" id="clock">
+  <div class="side top" id="b" role="button" tabindex="0" aria-label="Black's clock"><div class="t" id="bt">10:00</div><div class="m" id="bm">Black · tap after your move</div></div>
+  <div class="ctrl">
+    <button id="pause">Pause</button>
+    <button id="reset">Reset</button>
+    <button id="full">Full screen</button>
+    <button id="sound" aria-pressed="true">Sound on</button>
+  </div>
+  <div class="side" id="w" role="button" tabindex="0" aria-label="White's clock"><div class="t" id="wt">10:00</div><div class="m" id="wm">White · Black taps to start</div></div>
+</div>
+<p class="note">Tip: Black taps first to start White's clock. Space bar switches sides on a computer. The screen stays on while the clock runs (on browsers that allow it).</p>
+<h2>How to use a chess clock</h2>
+<p>A chess clock has two timers, one for each player. After you make your move, press your side of the clock: your time stops and your opponent's time starts. If your time reaches zero you lose on time, unless your opponent has no way at all to checkmate, in which case the game is a draw.</p>
+<h2>Common time controls</h2>
+<p><b>Bullet</b> is under three minutes per player (1|0, 2|1). <b>Blitz</b> is three to ten minutes (3|0, 3|2, 5|0). <b>Rapid</b> is ten to sixty minutes (10|0, 15|10). The second number is the increment: seconds added to your clock after every move you make, so you never run completely out of time in a won position.</p>
+<div class="cta-box">
+<h2>Practise it in BEST CHESS</h2>
+<p style="margin-inline:auto">Play every move yourself in the free Chess Academy (Play vs Computer and Puzzles), solve puzzles with no daily limit, and review your games with a strong engine. Offline, no ads, no account.</p>
+<div class="cta">
+<a class="btn btn-play when-live" href="https://play.google.com/store/apps/details?id=com.rg.bestchess"><svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path fill="#fff" d="M4 2.5v19l16-9.5z"/></svg><span class="t"><small>Free on Android</small>Download BEST CHESS</span></a>
+<span class="btn btn-soon when-soon"><span class="t"><small>Free on Android</small>Coming soon to Google Play</span></span>
+<a class="btn btn-ig when-soon" href="https://www.instagram.com/rgplayzchess/">Follow on Instagram</a>
+</div></div>
+</div></main>
+<script>
+(() => {
+  const PRESETS = [[1,0],[3,0],[3,2],[5,0],[10,0],[15,10],[30,0]];
+  const $ = (id) => document.getElementById(id);
+  let base = 600000, inc = 0, left = { w: base, b: base }, moves = { w: 0, b: 0 };
+  let active = null, running = false, last = 0, flagged = null, sound = true, lock = null, audio = null;
+  const fmt = (ms) => {
+    if (ms <= 0) return '0:00';
+    if (ms < 10000) return (ms / 1000).toFixed(1);
+    const s = Math.ceil(ms / 1000), m = Math.floor(s / 60);
+    const h = Math.floor(m / 60);
+    return h ? `${h}:${String(m % 60).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}` : `${m}:${String(s % 60).padStart(2, '0')}`;
+  };
+  const beep = (f, d) => {
+    if (!sound) return;
+    try {
+      audio = audio || new (window.AudioContext || window.webkitAudioContext)();
+      const o = audio.createOscillator(), g = audio.createGain();
+      o.frequency.value = f; o.connect(g); g.connect(audio.destination);
+      g.gain.setValueAtTime(0.15, audio.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001, audio.currentTime + d);
+      o.start(); o.stop(audio.currentTime + d);
+    } catch (_) {}
+  };
+  const keepAwake = async (on) => {
+    try {
+      if (on && 'wakeLock' in navigator && !lock) lock = await navigator.wakeLock.request('screen');
+      if (!on && lock) { await lock.release(); lock = null; }
+    } catch (_) {}
+  };
+  const draw = () => {
+    for (const s of ['w', 'b']) {
+      const el = $(s);
+      $(s + 't').textContent = fmt(left[s]);
+      el.classList.toggle('active', active === s && running);
+      el.classList.toggle('low', left[s] < 10000 && left[s] > 0);
+      el.classList.toggle('flag', flagged === s);
+      const name = s === 'w' ? 'White' : 'Black';
+      $(s + 'm').textContent = flagged === s ? `${name} · time is up`
+        : `${name} · moves ${moves[s]}${inc ? ' · +' + inc + 's' : ''}`;
+    }
+    $('pause').textContent = running ? 'Pause' : (active ? 'Resume' : 'Pause');
+  };
+  // Time is measured from the clock's timestamps, so it stays exact even
+  // when the browser slows timers (screen off, another tab).
+  const settle = () => {
+    if (!running) return;
+    const now = performance.now();
+    left[active] -= now - last; last = now;
+    if (left[active] <= 0) { left[active] = 0; flagged = active; running = false; keepAwake(false); beep(440, 0.8); }
+  };
+  const tick = () => { settle(); draw(); };
+  setInterval(tick, 100);
+  const press = (side) => {
+    if (flagged) return;
+    if (!active) {
+      // The first tap starts the other player's clock (Black taps, White's runs).
+      active = side === 'w' ? 'b' : 'w';
+      running = true; last = performance.now();
+      keepAwake(true); beep(880, 0.05); draw();
+      return;
+    }
+    if (side !== active) return;
+    settle();
+    if (flagged) { draw(); return; }
+    if (running) { left[side] += inc * 1000; moves[side]++; }
+    active = side === 'w' ? 'b' : 'w';
+    running = true; last = performance.now();
+    keepAwake(true); beep(880, 0.05); draw();
+  };
+  const reset = () => {
+    running = false; active = null; flagged = null;
+    left = { w: base, b: base }; moves = { w: 0, b: 0 }; keepAwake(false); draw();
+    $('wm').textContent = 'White · Black taps to start';
+  };
+  const setTime = (m, i, btn) => {
+    base = Math.max(1, Math.round(m * 60000)); inc = i;
+    document.querySelectorAll('#presets button').forEach((b) => b.classList.toggle('on', b === btn));
+    reset();
+  };
+  for (const [m, i] of PRESETS) {
+    const b = document.createElement('button');
+    b.textContent = `${m} | ${i}`; b.setAttribute('aria-label', `${m} minutes plus ${i} seconds`);
+    b.onclick = () => { $('custom').classList.remove('show'); setTime(m, i, b); };
+    if (m === 10 && i === 0) b.classList.add('on');
+    $('presets').appendChild(b);
+  }
+  const cb = document.createElement('button'); cb.textContent = 'Custom';
+  cb.onclick = () => { $('custom').classList.add('show'); document.querySelectorAll('#presets button').forEach((b) => b.classList.toggle('on', b === cb)); };
+  $('presets').appendChild(cb);
+  $('capply').onclick = () => setTime(+$('cm').value || 1, Math.max(0, +$('ci').value || 0), cb);
+  for (const s of ['w', 'b']) {
+    $(s).addEventListener('pointerdown', (ev) => { ev.preventDefault(); press(s); });
+    $(s).addEventListener('keydown', (ev) => { if (ev.key === 'Enter') press(s); });
+  }
+  document.addEventListener('keydown', (ev) => {
+    if (ev.code === 'Space' && ev.target === document.body) { ev.preventDefault(); press(active || 'b'); }
+  });
+  $('pause').onclick = () => {
+    if (!active || flagged) return;
+    settle(); if (flagged) { draw(); return; }
+    running = !running; last = performance.now();
+    keepAwake(running);
+    draw();
+  };
+  $('reset').onclick = reset;
+  $('full').onclick = () => { const c = $('clock'); (document.fullscreenElement ? document.exitFullscreen() : c.requestFullscreen?.())?.catch?.(() => {}); };
+  $('sound').onclick = () => { sound = !sound; $('sound').textContent = sound ? 'Sound on' : 'Sound off'; $('sound').setAttribute('aria-pressed', sound); };
+  document.addEventListener('visibilitychange', () => { if (!document.hidden && running) keepAwake(true); });
+  draw();
+})();
+</script>
+<footer><div class="wrap">
+<nav><a href="../../">Home</a><a href="../../learn/">Chess Guides</a><a href="../../puzzle/">Daily Puzzle</a><a href="../../tools/">Chess Tools</a><a class="when-live" href="https://play.google.com/store/apps/details?id=com.rg.bestchess">Google Play</a>
+<a href="https://rgxyzrg-hue.github.io/bestchess-privacy/">Privacy policy</a><a href="mailto:rgplayzchess@gmail.com">Contact: rgplayzchess@gmail.com</a></nav>
+<div>© 2026 BEST CHESS. All rights reserved. Positions checked with Stockfish 15.1 (GNU GPL v3).</div>
+<div>Google Play and the Google Play logo are trademarks of Google LLC.</div>
+</div></footer>
+</body>
+</html>
