@@ -292,6 +292,12 @@ footer a:hover { color: var(--gold); }
 .center { text-align: center; }
 .center .lead { margin-inline: auto; }
 
+/* Guide links on Home */
+.guide-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 24px; }
+.guide-links a { padding: 10px 16px; border-radius: 999px; border: 2px solid #d9c7a6; background: #fff;
+  color: var(--ink); text-decoration: none; font-weight: 800; }
+.guide-links a:hover { border-color: var(--gold-2); }
+
 /* Coming soon / live switch */
 html[data-live="false"] .when-live { display: none !important; }
 html[data-live="true"] .when-soon { display: none !important; }
@@ -324,6 +330,7 @@ html[data-live="true"] .when-soon { display: none !important; }
       <a class="hide-m" href="#review">Reviews</a>
       <a class="hide-m" href="#puzzles">Puzzles</a>
       <a class="hide-m" href="#academy">Academy</a>
+      <a class="hide-m" href="learn/">Guides</a>
       <a class="hide-m" href="#faq">FAQ</a>
       <a class="btn btn-play btn-sm when-live" href="https://play.google.com/store/apps/details?id=com.rg.bestchess">Download</a><span class="pill-soon when-soon">Coming soon</span>
     </nav>
@@ -531,6 +538,25 @@ html[data-live="true"] .when-soon { display: none !important; }
   </div>
 </section>
 
+<section class="light" aria-labelledby="guides-title">
+  <div class="wrap center reveal">
+    <div class="eyebrow">Free chess guides</div>
+    <h2 id="guides-title">Learn the patterns that win games</h2>
+    <p class="lead">Short guides with diagrams and puzzles. Every position is checked by Stockfish.</p>
+    <div class="guide-links">
+      <a href="learn/back-rank-mate/">Back-Rank Mate</a>
+      <a href="learn/smothered-mate/">Smothered Mate</a>
+      <a href="learn/arabian-mate/">Arabian Mate</a>
+      <a href="learn/scholars-mate/">Scholar's Mate</a>
+      <a href="learn/italian-game/">Italian Game</a>
+      <a href="learn/queens-gambit/">Queen's Gambit</a>
+      <a href="learn/queen-checkmate/">King and Queen Checkmate</a>
+      <a href="learn/key-squares/">Key Squares</a>
+    </div>
+    <p style="margin-top:22px"><a class="btn btn-line" style="color:var(--gold-2);border-color:var(--gold-2)" href="learn/">All chess guides</a></p>
+  </div>
+</section>
+
 <section id="faq" class="board-bg dark" aria-labelledby="faq-title">
   <div class="wrap">
     <div class="center"><div class="eyebrow">Questions</div><h2 id="faq-title">Frequently asked questions</h2></div>
@@ -566,6 +592,7 @@ html[data-live="true"] .when-soon { display: none !important; }
   <div class="wrap">
     <nav>
       <a class="when-live" href="https://play.google.com/store/apps/details?id=com.rg.bestchess">Google Play</a>
+      <a href="learn/">Chess Guides</a>
       <a href="https://rgxyzrg-hue.github.io/bestchess-privacy/">Privacy policy</a>
       <a href="mailto:rgplayzchess@gmail.com">Contact: rgplayzchess@gmail.com</a>
       <a href="https://www.instagram.com/rgplayzchess/">Instagram</a>

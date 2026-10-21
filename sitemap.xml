@@ -1,4 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://bestchessapp.github.io/</loc><lastmod>2026-10-21</lastmod></url>
+  <url><loc>https://bestchessapp.github.io/learn/</loc><lastmod>2026-10-21</lastmod></url>
+  <url><loc>https://bestchessapp.github.io/learn/back-rank-mate/</loc><lastmod>2026-10-21</lastmod></url>
+  <url><loc>https://bestchessapp.github.io/learn/smothered-mate/</loc><lastmod>2026-10-21</lastmod></url>
+  <url><loc>https://bestchessapp.github.io/learn/arabian-mate/</loc><lastmod>2026-10-21</lastmod></url>
+  <url><loc>https://bestchessapp.github.io/learn/anastasias-mate/</loc><lastmod>2026-10-21</lastmod></url>
+  <url><loc>https://bestchessapp.github.io/learn/bodens-mate/</loc><lastmod>2026-10-21</lastmod></url>
+  <url><loc>https://bestchessapp.github.io/learn/scholars-mate/</loc><lastmod>2026-10-21</lastmod></url>
+  <url><loc>https://bestchessapp.github.io/learn/fools-mate/</loc><lastmod>2026-10-21</lastmod></url>
+  <url><loc>https://bestchessapp.github.io/learn/legals-mate/</loc><lastmod>2026-10-21</lastmod></url>
+  <url><loc>https://bestchessapp.github.io/learn/italian-game/</loc><lastmod>2026-10-21</lastmod></url>
+  <url><loc>https://bestchessapp.github.io/learn/queens-gambit/</loc><lastmod>2026-10-21</lastmod></url>
+  <url><loc>https://bestchessapp.github.io/learn/caro-kann-defence/</loc><lastmod>2026-10-21</lastmod></url>
+  <url><loc>https://bestchessapp.github.io/learn/queen-checkmate/</loc><lastmod>2026-10-21</lastmod></url>
+  <url><loc>https://bestchessapp.github.io/learn/rook-checkmate/</loc><lastmod>2026-10-21</lastmod></url>
+  <url><loc>https://bestchessapp.github.io/learn/key-squares/</loc><lastmod>2026-10-21</lastmod></url>
 </urlset>
