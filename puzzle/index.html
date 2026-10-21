@@ -7,6 +7,7 @@
 <meta name="description" content="A free chess puzzle every day. Find the best move, then check the solution step by step. Puzzles from the Lichess open database, from beginner to club level.">
 <meta name="theme-color" content="#16130f">
 <link rel="canonical" href="https://bestchessapp.github.io/puzzle/">
+
 <meta property="og:type" content="article">
 <meta property="og:title" content="Daily Chess Puzzle: A New Puzzle Every Day">
 <meta property="og:description" content="A free chess puzzle every day. Find the best move, then check the solution step by step. Puzzles from the Lichess open database, from beginner to club level.">
@@ -21,19 +22,21 @@
 <body>
 <header class="top"><div class="wrap">
 <a class="brand" href="../" aria-label="BEST CHESS home"><svg class="mark" viewBox="0 0 64 40" aria-hidden="true"><path fill="currentColor" d="M4 10a4 4 0 1 1 3.6 4l5.4 13 12-15a4 4 0 1 1 14 0l12 15 5.4-13A4 4 0 1 1 60 10l-6 22H10z"/><rect x="10" y="34" width="44" height="6" rx="2" fill="currentColor"/></svg><span>BEST CHESS</span></a>
-<nav class="nav"><a class="hide-m" href="../learn/">Guides</a><a class="hide-m" href="../puzzle/">Daily Puzzle</a><a class="hide-m" href="../tools/">Tools</a>
+<nav class="nav"><a class="hide-m" href="../learn/">Guides</a><a class="hide-m" href="../puzzle/">Daily Puzzle</a><a class="hide-m" href="../tools/">Tools</a><a class="hide-m" href="../hi/" lang="hi">हिंदी</a>
 <a class="btn btn-play btn-sm when-live" href="https://play.google.com/store/apps/details?id=com.rg.bestchess">Download</a><span class="pill-soon when-soon">Coming soon</span></nav>
 </div></header>
 <style>
 .pz { display: grid; grid-template-columns: minmax(0, 520px) minmax(0, 1fr); gap: 26px; align-items: start; }
 @media (max-width: 860px) { .pz { grid-template-columns: 1fr; } }
-.pb { position: relative; aspect-ratio: 1; width: 100%; border: 3px solid var(--gold); border-radius: 6px; overflow: hidden; touch-action: manipulation; }
+.pb { position: relative; aspect-ratio: 1; width: 100%; border: 3px solid var(--gold); border-radius: 6px; overflow: hidden; touch-action: none; }
 .pb .s { position: absolute; width: 12.5%; height: 12.5%; cursor: pointer; }
 .pb .l { background: #eeeed2; } .pb .d { background: #769656; }
 .pb .s img { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
 .pb .last { box-shadow: inset 0 0 0 999px rgba(246, 224, 94, .55); }
 .pb .sel { box-shadow: inset 0 0 0 4px #e2b13c, inset 0 0 0 999px rgba(226,177,60,.35); }
 .pb .bad { animation: bad .4s; }
+.pb .lift img { opacity: .25; }
+.ghost { position: fixed; pointer-events: none; z-index: 50; filter: drop-shadow(0 10px 12px rgba(0,0,0,.45)); }
 @keyframes bad { 0%,100% { transform: none; } 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
 .info { background: var(--espresso-2); border: var(--line) solid var(--gold); border-radius: var(--radius); padding: 22px; display: grid; gap: 12px; }
 .info h2 { margin: 0; }
@@ -55,7 +58,7 @@
   <div class="info">
     <h2 id="title">Find the best move</h2>
     <div class="meta" id="meta"></div>
-    <div class="msg" id="msg" aria-live="polite">Tap a piece, then the square to move it to.</div>
+    <div class="msg" id="msg" aria-live="polite">Drag a piece, or tap it and then its square.</div>
     <div class="btns">
       <button class="main" id="hint">Show next move</button>
       <button id="retry">Try again</button>
@@ -118,7 +121,8 @@
       d.style.left = c * 12.5 + '%'; d.style.top = r * 12.5 + '%';
       d.dataset.sq = sq; d.setAttribute('role', 'gridcell'); d.setAttribute('aria-label', sq + (grid[sq] ? ' ' + grid[sq] : ''));
       if (grid[sq]) { const im = document.createElement('img'); im.src = '../assets/pieces/' + grid[sq] + '.webp'; im.alt = ''; d.appendChild(im); }
-      d.onclick = () => tap(sq, d);
+      d.onclick = () => { if (dragged) { dragged = false; return; } tap(sq, d); };
+      d.addEventListener('pointerdown', (ev) => startDrag(ev, sq, d));
       b.appendChild(d);
     }
   };
@@ -130,16 +134,49 @@
     setTimeout(() => { apply(line[step]); step++; busy = false; render();
       if (done()) { msg('Solved! Well played.', 'ok'); $('hint').disabled = true; } else msg('Correct! Keep going.', 'ok'); }, 500);
   };
+  const tryMove = (from, to, el) => {
+    const want = line[step];
+    if (want.slice(0, 4) === from + to) { apply(want); step++; sel = null; render(); reply(); }
+    else { if (el) el.classList.add('bad'); msg('Not the best move. Try again.', 'no'); sel = null; setTimeout(render, 400); }
+  };
   const tap = (sq, el) => {
     if (busy || done()) return;
-    if (sel && sel !== sq && !(grid[sq] && grid[sq][0] === side)) {
-      const want = line[step];
-      if (want.slice(0, 4) === sel + sq) { apply(want); step++; sel = null; render(); reply(); }
-      else { el.classList.add('bad'); msg('Not the best move. Try again.', 'no'); sel = null; setTimeout(render, 400); }
-      return;
-    }
+    if (sel && sel !== sq && !(grid[sq] && grid[sq][0] === side)) { tryMove(sel, sq, el); return; }
     if (grid[sq] && grid[sq][0] === side) { sel = sel === sq ? null : sq; render(); }
   };
+  // Drag and drop: press a piece of yours, move, let go on a square.
+  let drag = null, dragged = false;
+  const startDrag = (ev, sq, el) => {
+    if (busy || done() || !(grid[sq] && grid[sq][0] === side)) return;
+    drag = { from: sq, el, x: ev.clientX, y: ev.clientY, ghost: null, size: el.getBoundingClientRect().width };
+    el.setPointerCapture?.(ev.pointerId);
+  };
+  document.addEventListener('pointermove', (ev) => {
+    if (!drag) return;
+    if (!drag.ghost) {
+      if (Math.hypot(ev.clientX - drag.x, ev.clientY - drag.y) < 6) return;
+      const g = document.createElement('img');
+      g.src = '../assets/pieces/' + grid[drag.from] + '.webp'; g.className = 'ghost';
+      g.style.width = g.style.height = drag.size * 1.15 + 'px';
+      document.body.appendChild(g); drag.ghost = g; drag.el.classList.add('lift');
+      sel = drag.from;
+    }
+    ev.preventDefault();
+    drag.ghost.style.left = ev.clientX - drag.size * 0.575 + 'px';
+    drag.ghost.style.top = ev.clientY - drag.size * 0.9 + 'px';
+  }, { passive: false });
+  document.addEventListener('pointerup', (ev) => {
+    if (!drag) return;
+    const d = drag; drag = null;
+    if (!d.ghost) return;
+    d.ghost.remove(); d.el.classList.remove('lift'); dragged = true;
+    // Aim with the piece, drawn a little above the finger.
+    const hit = document.elementFromPoint(ev.clientX, ev.clientY - d.size * 0.3)?.closest('.s');
+    setTimeout(() => { dragged = false; }, 0);
+    if (!hit || hit.dataset.sq === d.from) { sel = null; render(); return; }
+    tryMove(d.from, hit.dataset.sq, hit);
+  });
+  document.addEventListener('pointercancel', () => { if (drag?.ghost) { drag.ghost.remove(); drag.el.classList.remove('lift'); } drag = null; });
   const load = () => {
     const n = all.length, i = ((day % n) + n) % n; P = all[i];
     grid = parse(P.f); last = null; apply(P.s);
@@ -151,7 +188,7 @@
     const themes = P.t.split(' ').map((t) => THEMES[t]).filter(Boolean);
     $('title').textContent = (side === 'w' ? 'White' : 'Black') + ' to move: find the best move';
     $('meta').textContent = 'Rating about ' + P.r + (themes.length ? ' · Theme: ' + themes.join(', ') : '');
-    msg("Your opponent's last move is highlighted. Tap a piece, then its square.");
+    msg("Your opponent's last move is highlighted. Drag a piece, or tap it and then its square.");
     $('hint').disabled = false; $('next').disabled = day >= todayIdx();
     render();
   };
@@ -163,7 +200,7 @@
 })();
 </script>
 <footer><div class="wrap">
-<nav><a href="../">Home</a><a href="../learn/">Chess Guides</a><a href="../puzzle/">Daily Puzzle</a><a href="../tools/">Chess Tools</a><a class="when-live" href="https://play.google.com/store/apps/details?id=com.rg.bestchess">Google Play</a>
+<nav><a href="../">Home</a><a href="../learn/">Chess Guides</a><a href="../puzzle/">Daily Puzzle</a><a href="../tools/">Chess Tools</a><a href="../hi/" lang="hi">शतरंज हिंदी में</a><a class="when-live" href="https://play.google.com/store/apps/details?id=com.rg.bestchess">Google Play</a>
 <a href="https://rgxyzrg-hue.github.io/bestchess-privacy/">Privacy policy</a><a href="mailto:rgplayzchess@gmail.com">Contact: rgplayzchess@gmail.com</a></nav>
 <div>© 2026 BEST CHESS. All rights reserved. Positions checked with Stockfish 15.1 (GNU GPL v3).</div>
 <div>Google Play and the Google Play logo are trademarks of Google LLC.</div>
