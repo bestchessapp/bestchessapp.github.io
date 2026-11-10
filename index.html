@@ -314,6 +314,12 @@ html[data-live="true"] .when-soon { display: none !important; }
   .reveal { opacity: 1; transform: none; transition: none; }
   html { scroll-behavior: auto; }
 }
+
+/* Books */
+.plans.books .book{display:flex;gap:18px;align-items:flex-start;text-decoration:none;color:inherit}
+.plans.books .book img{width:110px;height:auto;border-radius:6px;box-shadow:0 6px 18px rgba(0,0,0,.25);flex:none}
+.plans.books .book p{margin:8px 0 6px}
+.plans.books .book small{color:var(--muted)}
 </style>
 </head>
 <body>
@@ -571,9 +577,29 @@ html[data-live="true"] .when-soon { display: none !important; }
 <section id="books" class="light" aria-labelledby="books-title">
   <div class="wrap center reveal">
     <div class="eyebrow">BEST CHESS Books</div>
-    <h2 id="books-title">Our chess eBook on Amazon Kindle</h2>
-    <p class="lead">Read it on your Kindle, phone or tablet with the free Kindle app.</p>
-    <p style="margin-top:22px"><a class="btn btn-line" href="https://www.amazon.com/dp/B0HQCKJK3Y" target="_blank" rel="noopener">Buy on Amazon Kindle</a></p>
+    <h2 id="books-title">The Chess Vision Series</h2>
+    <p class="lead">Two practical chess books on Amazon, for Kindle and in paperback.</p>
+    <div class="plans books" style="text-align:left">
+      <a class="plan book" href="https://www.amazon.com/dp/B0HQCKJK3Y" target="_blank" rel="noopener">
+        <img src="assets/books/tactical-vision.webp" width="238" height="383" loading="lazy" alt="Tactical Vision: The Practical Guide to Seeing Winning Moves in Chess — book cover">
+        <div>
+          <h3>Tactical Vision</h3>
+          <div class="sub">The Practical Guide to Seeing Winning Moves in Chess</div>
+          <p>You know what a fork is. So why do you keep missing them in your own games? Learn to see the tactics on the board in time.</p>
+          <small>by RGplayzchess · Kindle and Paperback</small>
+        </div>
+      </a>
+      <a class="plan book" href="https://www.amazon.com/dp/B0HQCKJK3Y" target="_blank" rel="noopener">
+        <img src="assets/books/endgame-vision.webp" width="238" height="383" loading="lazy" alt="Endgame Vision: Stop Letting Won Games Slip Away — book cover">
+        <div>
+          <h3>Endgame Vision</h3>
+          <div class="sub">Stop Letting Won Games Slip Away</div>
+          <p>Turn winning positions into wins: the endgame habits that stop a won game from slipping away.</p>
+          <small>by BestChessApp · Kindle and Paperback</small>
+        </div>
+      </a>
+    </div>
+    <p style="margin-top:22px"><a class="btn btn-line" href="https://www.amazon.com/dp/B0HQCKJK3Y" target="_blank" rel="noopener">Get the series on Amazon</a></p>
   </div>
 </section>
 
