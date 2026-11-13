@@ -145,12 +145,12 @@ a { color: var(--gold); }
 .hero .wrap { display: grid; grid-template-columns: 1.1fr .9fr; gap: 40px; align-items: center; }
 .crown { width: 64px; color: var(--gold); margin-bottom: 8px; }
 .kicker { color: var(--gold); font-weight: 800; letter-spacing: 3px; text-transform: uppercase; font-size: 14px; }
-h1 {
+h1, h2.h1 {
   font-family: var(--serif); font-weight: 900;
   font-size: clamp(34px, 5.6vw, 64px); line-height: 1.08; text-wrap: balance;
   margin: 10px 0 18px; color: var(--ivory);
 }
-h1 em { font-style: normal; color: var(--gold); }
+h1 em, h2.h1 em { font-style: normal; color: var(--gold); }
 .lead { font-size: clamp(17px, 2vw, 20px); color: var(--muted); max-width: 560px; margin: 0 0 28px; }
 .cta { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
 .ticks { display: flex; flex-wrap: wrap; gap: 10px 22px; margin-top: 26px; padding: 0; list-style: none; }
@@ -321,6 +321,68 @@ html[data-live="true"] .when-soon { display: none !important; }
 .plans.books .book p{margin:8px 0 6px}
 .plans.books .book small{color:var(--muted)}
 </style>
+<style>
+/* Top of the homepage: our menu on the left, the free review tool beside it. */
+.appshell { display: grid; grid-template-columns: 250px 1fr; gap: 14px; padding: 14px;
+  background: var(--espresso); min-height: calc(100vh - 72px); box-sizing: border-box; }
+.side { background: var(--espresso-2); border-radius: 18px; padding: 14px 12px;
+  display: flex; flex-direction: column; gap: 10px; border: 1px solid rgba(212,174,110,.18); }
+.side .lbl { color: var(--muted); font: 800 12px var(--sans); letter-spacing: .12em;
+  text-transform: uppercase; padding: 6px 12px 4px; }
+.side a { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 14px;
+  color: var(--ivory); text-decoration: none; font: 800 16px var(--sans); background: var(--walnut);
+  border: 1px solid rgba(212,174,110,.14); border-bottom: 4px solid #120f0c; transition: transform .08s; }
+.side a svg { width: 20px; height: 20px; flex: none; fill: none; stroke: var(--gold);
+  stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.side a:hover { background: #382e25; }
+.side a:active { transform: translateY(2px); border-bottom-width: 2px; }
+.side a.on { background: var(--gold); color: var(--ink); border-color: var(--gold); border-bottom-color: var(--gold-2); }
+.side a.on svg { stroke: var(--ink); }
+.side .tag { margin-left: auto; font: 800 11px var(--sans); padding: 3px 7px; border-radius: 7px;
+  background: rgba(92,154,53,.25); color: #9fd77a; }
+.side a.on .tag { background: rgba(36,29,22,.18); color: var(--ink); }
+.side .grow { flex: 1; }
+.side .app { background: var(--green); color: #fff; justify-content: center; border-color: var(--green); border-bottom-color: #3f7a22; }
+.side .app:hover { background: #4f8a2d; }
+.tool { display: flex; flex-direction: column; min-width: 0; background: var(--espresso-2);
+  border-radius: 18px; border: 1px solid rgba(212,174,110,.18); overflow: hidden; }
+.tool-bar { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; padding: 14px 20px 6px; }
+.tool-bar h1 { margin: 0; font: 900 28px var(--serif); color: var(--gold); line-height: 1.2; }
+.tool-bar p { margin: 0; color: var(--muted); font: 600 15px var(--sans); }
+.tool iframe { flex: 1; width: 100%; min-height: 560px; border: 0; display: block; }
+@media (max-width: 900px) {
+  .appshell { grid-template-columns: 1fr; padding: 10px; gap: 10px; min-height: 0; }
+  .side { flex-direction: row; overflow-x: auto; padding: 8px; gap: 6px; scrollbar-width: none; }
+  .side::-webkit-scrollbar { display: none; }
+  .side .lbl, .side .grow { display: none; }
+  .side a { white-space: nowrap; padding: 9px 12px; font-size: 15px; }
+  .side .tag { display: none; }
+  .tool-bar { padding: 12px 14px 4px; }
+  .tool-bar h1 { font-size: 23px; }
+  .tool iframe { height: 86vh; min-height: 600px; flex: none; }
+}
+/* App download bar that slides up from the bottom (closable, remembered). */
+.appbar { position: fixed; left: 50%; bottom: 16px; z-index: 50; width: min(760px, calc(100% - 24px));
+  transform: translate(-50%, 140%); transition: transform .45s cubic-bezier(.2,.9,.3,1.2);
+  display: flex; align-items: center; gap: 16px; padding: 12px 52px 12px 14px; box-sizing: border-box;
+  background: var(--espresso-2); border: 2px solid var(--gold); border-bottom-width: 5px;
+  border-radius: 18px; box-shadow: 0 18px 50px rgba(0,0,0,.55); }
+.appbar.show { transform: translate(-50%, 0); }
+.appbar img { width: 54px; height: 54px; border-radius: 14px; flex: none; }
+.appbar .txt { flex: 1; min-width: 0; }
+.appbar b { display: block; color: var(--ivory); font: 900 18px var(--sans); }
+.appbar span { color: var(--muted); font: 600 14px var(--sans); }
+.appbar .get { flex: none; text-decoration: none; background: var(--green); color: #fff; font: 800 16px var(--sans);
+  padding: 11px 18px; border-radius: 12px; border-bottom: 4px solid #3f7a22; white-space: nowrap; }
+.appbar .x { position: absolute; top: 8px; right: 8px; width: 36px; height: 36px; border-radius: 10px;
+  border: 0; background: rgba(239,230,216,.08); color: var(--ivory); font: 700 20px var(--sans); cursor: pointer; }
+@media (max-width: 560px) {
+  .appbar { gap: 10px; padding: 10px 46px 10px 10px; bottom: 10px; }
+  .appbar img { width: 44px; height: 44px; }
+  .appbar b { font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .appbar span { display: none; }
+  .appbar .get { padding: 9px 12px; font-size: 14px; }
+}
+</style>
 </head>
 <body>
 
@@ -333,7 +395,7 @@ html[data-live="true"] .when-soon { display: none !important; }
   <div class="wrap">
     <a class="brand" href="#" aria-label="BEST CHESS home"><svg class="mark" viewBox="0 0 64 40" aria-hidden="true"><path fill="currentColor" d="M4 10a4 4 0 1 1 3.6 4l5.4 13 12-15a4 4 0 1 1 14 0l12 15 5.4-13A4 4 0 1 1 60 10l-6 22H10z"/><rect x="10" y="34" width="44" height="6" rx="2" fill="currentColor"/></svg><span>BEST CHESS</span></a>
     <nav class="nav">
-      <a class="hide-m" href="#review">Reviews</a>
+      <a class="hide-m" href="review/">Free Game Review</a>
       <a class="hide-m" href="#puzzles">Puzzles</a>
       <a class="hide-m" href="#academy">Academy</a>
       <a class="hide-m" href="learn/">Guides</a>
@@ -347,12 +409,33 @@ html[data-live="true"] .when-soon { display: none !important; }
 </header>
 
 <main>
+<section class="appshell" aria-labelledby="tool-title">
+  <nav class="side" aria-label="BEST CHESS">
+    <div class="lbl">Free tools</div>
+    <a class="on" href="#tool-title"><svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg>Game Review<span class="tag">Free</span></a>
+    <a href="play/"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M9 9h.01M15 9h.01M9 15h6"/></svg>Play vs Computer</a>
+    <a href="puzzle/"><svg viewBox="0 0 24 24"><path d="M9 3h6v4a2 2 0 1 0 0 4v4h-4a2 2 0 1 0-4 0H3V9h4a2 2 0 1 0 0-4V3z"/></svg>Daily Puzzle</a>
+    <a href="tools/"><svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M10 2h4"/></svg>Chess Tools</a>
+    <a href="learn/"><svg viewBox="0 0 24 24"><path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 21V5"/></svg>Chess Guides</a>
+    <a href="#books"><svg viewBox="0 0 24 24"><path d="M4 19V5l8 3 8-3v14l-8 3z"/><path d="M12 8v14"/></svg>Books</a>
+    <div class="grow"></div>
+    <a class="app when-live" href="https://play.google.com/store/apps/details?id=com.rg.bestchess"><svg viewBox="0 0 24 24" style="stroke:#fff"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>Get the App</a>
+  </nav>
+  <div class="tool">
+    <div class="tool-bar">
+      <h1 id="tool-title">Free Chess Game Review</h1>
+      <p>Unlimited · Stockfish 19 in your browser · Chess.com, Lichess or PGN</p>
+    </div>
+    <iframe src="review/app/?embed=1" title="BEST CHESS free game review" allow="clipboard-read; clipboard-write"></iframe>
+  </div>
+</section>
+
 <section class="hero board-bg" aria-labelledby="hero-title">
   <div class="wrap">
     <div>
       <svg class="crown" viewBox="0 0 64 40" aria-hidden="true"><path fill="currentColor" d="M4 10a4 4 0 1 1 3.6 4l5.4 13 12-15a4 4 0 1 1 14 0l12 15 5.4-13A4 4 0 1 1 60 10l-6 22H10z"/><rect x="10" y="34" width="44" height="6" rx="2" fill="currentColor"/></svg>
       <div class="kicker">Play. Review. Improve.</div>
-      <h1 id="hero-title">Review every game.<br><em>Solve without limits.</em></h1>
+      <h2 id="hero-title" class="h1">Review every game.<br><em>Solve without limits.</em></h2>
       <p class="lead">BEST CHESS is a free chess app for Android with unlimited game reviews, puzzles with no daily limit and a chess academy from beginner to master. It works offline, with no ads and no account.</p>
       <div class="cta">
         <a class="btn btn-play when-live" href="https://play.google.com/store/apps/details?id=com.rg.bestchess">
@@ -656,6 +739,39 @@ html[data-live="true"] .when-soon { display: none !important; }
     for (const e of es) if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
   }, { threshold: 0.15 });
   document.querySelectorAll('.reveal').forEach((el) => io ? io.observe(el) : el.classList.add('in'));
+</script>
+
+<aside class="appbar when-live" id="appbar" aria-label="Get the BEST CHESS app" hidden>
+  <img src="assets/apple-touch-icon.png" alt="" width="54" height="54">
+  <div class="txt"><b>BEST CHESS app</b><span>Unlimited reviews and puzzles, offline. Free on Android.</span></div>
+  <a class="get" href="https://play.google.com/store/apps/details?id=com.rg.bestchess">Get the App</a>
+  <button class="x" type="button" aria-label="Close">×</button>
+</aside>
+<script>
+(() => {
+  const bar = document.getElementById('appbar');
+  if (!bar) return;
+  const key = 'bc_appbar_closed';
+  let closed = 0;
+  try { closed = +localStorage.getItem(key) || 0; } catch (e) {}
+  // Closed less than 7 days ago: stay hidden.
+  if (Date.now() - closed < 7 * 864e5) return;
+  bar.hidden = false;
+  // Never over the review tool: it slides up once the visitor scrolls past
+  // the tool, or after 40 seconds.
+  const show = () => bar.classList.add('show');
+  const tool = document.querySelector('.appshell');
+  if (tool && 'IntersectionObserver' in window) {
+    new IntersectionObserver((e, o) => {
+      if (e[0].intersectionRatio < 0.35) { show(); o.disconnect(); }
+    }, { threshold: [0, 0.35] }).observe(tool);
+  }
+  setTimeout(show, 40000);
+  bar.querySelector('.x').addEventListener('click', () => {
+    bar.classList.remove('show');
+    try { localStorage.setItem(key, String(Date.now())); } catch (e) {}
+  });
+})();
 </script>
 </body>
 </html>
