@@ -361,6 +361,12 @@ html[data-live="true"] .when-soon { display: none !important; }
   .tool-bar h1 { font-size: 23px; }
   .tool iframe { height: 86vh; min-height: 600px; flex: none; }
 }
+@media (max-width: 600px) {
+  /* Phone: the tool runs edge to edge, so the board can too. */
+  .appshell { padding: 8px 0 0; }
+  .side { margin: 0 8px; }
+  .tool { border-radius: 0; border-left: 0; border-right: 0; }
+}
 /* App download bar that slides up from the bottom (closable, remembered). */
 .appbar { position: fixed; left: 50%; bottom: 16px; z-index: 50; width: min(760px, calc(100% - 24px));
   transform: translate(-50%, 140%); transition: transform .45s cubic-bezier(.2,.9,.3,1.2);
@@ -426,7 +432,7 @@ html[data-live="true"] .when-soon { display: none !important; }
       <h1 id="tool-title">Free Chess Game Review</h1>
       <p>Unlimited · Stockfish 19 in your browser · Chess.com, Lichess or PGN</p>
     </div>
-    <iframe src="review/app/?embed=1" title="BEST CHESS free game review" allow="clipboard-read; clipboard-write"></iframe>
+    <iframe src="review/app/?embed=1" title="BEST CHESS free game review" allow="clipboard-read; clipboard-write; fullscreen" allowfullscreen></iframe>
   </div>
 </section>
 

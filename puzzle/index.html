@@ -26,8 +26,34 @@
 <a class="btn btn-play btn-sm when-live" href="https://play.google.com/store/apps/details?id=com.rg.bestchess">Download</a><span class="pill-soon when-soon">Coming soon</span></nav>
 </div></header>
 <style>
-.pz { display: grid; grid-template-columns: minmax(0, 520px) minmax(0, 1fr); gap: 26px; align-items: start; }
-@media (max-width: 860px) { .pz { grid-template-columns: 1fr; } }
+.ptool { --b: clamp(280px, calc(100svh - 64px - 42px), 680px);
+  display: grid; grid-template-columns: var(--b) minmax(300px, 400px); justify-content: center; gap: 18px;
+  padding: 18px 16px; background: var(--espresso); }
+.ptool .pb { width: var(--b); }
+.ptool:fullscreen { --b: min(calc(100vh - 36px), calc(100vw - 452px)); align-content: center; min-height: 100vh; }
+.ptool:-webkit-full-screen { --b: min(calc(100vh - 36px), calc(100vw - 452px)); align-content: center; min-height: 100vh; }
+@media (max-width: 760px), (max-aspect-ratio: 1/1) {
+  .ptool { --b: min(calc(100vw - 20px), calc(100svh - 64px - 150px)); grid-template-columns: var(--b); padding: 10px; gap: 10px; }
+  .ptool:fullscreen { --b: min(calc(100vw - 20px), calc(100vh - 170px)); }
+  .ptool:-webkit-full-screen { --b: min(calc(100vw - 20px), calc(100vh - 170px)); }
+}
+.phead { display: flex; align-items: center; gap: 8px; }
+.phead h1 { margin: 0; flex: 1; font: 900 26px var(--serif); color: var(--gold); line-height: 1.15; }
+.fsbtn { flex: none; width: 44px; height: 44px; border-radius: 12px; border: 2px solid var(--gold); background: var(--espresso);
+  color: var(--gold); cursor: pointer; display: grid; place-items: center; box-shadow: 0 3px 0 rgba(0,0,0,.35); }
+.fsbtn svg { width: 24px; height: 24px; }
+#date { margin: 0; color: var(--muted); font: 600 14px var(--sans); }
+@media (max-width: 760px), (max-aspect-ratio: 1/1) {
+  .phead h1 { font-size: 20px; }
+  .fsbtn { width: 38px; height: 38px; }
+  .info { padding: 12px 14px; gap: 7px; }
+  .info .note, #date { display: none; }
+  #title { font-size: 16px !important; margin: 0; }
+  .meta { font-size: 13px; }
+  .msg { font-size: 15px; min-height: 0; }
+  .btns { gap: 8px; }
+  .btns button { font-size: 15px; padding: 9px 10px; }
+}
 .pb { position: relative; aspect-ratio: 1; width: 100%; border: 3px solid var(--gold); border-radius: 6px; overflow: hidden; touch-action: none; }
 .pb .s { position: absolute; width: 12.5%; height: 12.5%; cursor: pointer; }
 .pb .l { background: #eeeed2; } .pb .d { background: #769656; }
@@ -48,25 +74,26 @@
 @keyframes pop { from { transform: scale(0); } to { transform: scale(1); } }
 .ghost { position: fixed; pointer-events: none; z-index: 50; filter: drop-shadow(0 10px 12px rgba(0,0,0,.45)); }
 @keyframes bad { 0%,100% { transform: none; } 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
-.info { background: var(--espresso-2); border: var(--line) solid var(--gold); border-radius: var(--radius); padding: 22px; display: grid; gap: 12px; }
+.info { background: var(--espresso-2); border: var(--line) solid var(--gold); border-radius: var(--radius); padding: 20px; display: grid; gap: 12px; align-content: start; }
 .info h2 { margin: 0; }
 .msg { font: 800 20px var(--sans); color: var(--ivory); min-height: 1.5em; }
 .msg.ok { color: #9be07a; } .msg.no { color: #ff9b8f; }
 .meta { color: var(--muted); font-weight: 700; }
 .btns { display: flex; flex-wrap: wrap; gap: 10px; }
-.btns button { font: 800 16px var(--sans); padding: 12px 16px; border-radius: 12px; cursor: pointer;
+.btns button { flex: 1 1 auto; box-shadow: 0 3px 0 rgba(0,0,0,.35); font: 800 16px var(--sans); padding: 12px 16px; border-radius: 12px; cursor: pointer;
   border: 2px solid var(--gold); background: var(--espresso); color: var(--gold); }
 .btns button.main { background: var(--green); border-color: var(--green); color: #fff; }
 .btns button:disabled { opacity: .4; cursor: default; }
 </style>
-<main class="guide board-bg"><div class="wrap" style="width:min(1160px, 100% - 32px)">
-<div class="crumbs"><a href="../">Home</a> › Daily Chess Puzzle</div>
-<h1>Daily Chess Puzzle</h1>
-<p class="lead" id="date">A new puzzle every day.</p>
-<div class="pz">
-  <div><div class="pb" id="board" role="grid" aria-label="Puzzle board"></div></div>
+<section class="ptool" id="ptool" aria-label="Daily chess puzzle">
+  <div class="pb" id="board" role="grid" aria-label="Puzzle board"></div>
   <div class="info">
-    <h2 id="title">Find the best move</h2>
+    <div class="phead">
+      <h1>Daily Chess Puzzle</h1>
+      <button class="fsbtn" id="fs" type="button" aria-label="Full screen" title="Full screen" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path id="fsicon" d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+    </div>
+    <p id="date">A new puzzle every day.</p>
+    <h2 id="title" style="font-size:20px">Find the best move</h2>
     <div class="meta" id="meta"></div>
     <div class="msg" id="msg" aria-live="polite">Drag a piece, or tap it and then its square.</div>
     <div class="btns">
@@ -77,9 +104,11 @@
       <button id="prev">← Previous day</button>
       <button id="next">Next day →</button>
     </div>
-    <p class="meta" style="font-size:14px">Puzzles from the Lichess open database (CC0). Ratings are approximate.</p>
+    <p class="meta note" style="font-size:13px;margin:0">Puzzles from the Lichess open database (CC0). Ratings are approximate.</p>
   </div>
-</div>
+</section>
+<main class="guide board-bg"><div class="wrap" style="width:min(1160px, 100% - 32px)">
+<div class="crumbs"><a href="../">Home</a> › Daily Chess Puzzle</div>
 <h2>How to solve chess puzzles</h2>
 <p>Start with checks, captures and threats: look at every check first, then every capture, then moves that attack something. Ask what your opponent's last move changed, and which of their pieces are loose or overloaded. Solve the whole line in your head before you move.</p>
 <p>Want more than one a day? BEST CHESS has puzzles with no daily limit, a puzzle rating, and puzzles by theme.</p>
@@ -292,6 +321,22 @@
   $('retry').onclick = load;
   $('prev').onclick = () => { day--; load(); };
   $('next').onclick = () => { if (day < todayIdx()) { day++; load(); } };
+  // Full screen: the board and its panel only (the browser's own).
+  const tool = $('ptool'), fs = $('fs');
+  const fsOn = () => document.fullscreenElement || document.webkitFullscreenElement;
+  if (document.fullscreenEnabled || document.webkitFullscreenEnabled) {
+    fs.hidden = false;
+    fs.onclick = () => {
+      if (fsOn()) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+      else { const p = (tool.requestFullscreen || tool.webkitRequestFullscreen).call(tool); if (p && p.catch) p.catch(() => {}); }
+    };
+    const sync = () => {
+      const on = !!fsOn();
+      fs.setAttribute('aria-label', on ? 'Exit full screen' : 'Full screen'); fs.title = fs.getAttribute('aria-label');
+      $('fsicon').setAttribute('d', on ? 'M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5' : 'M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5');
+    };
+    document.addEventListener('fullscreenchange', sync); document.addEventListener('webkitfullscreenchange', sync);
+  }
   fetch('puzzles.json').then((r) => r.json()).then((d) => { all = d; load(); }).catch(() => msg('Could not load the puzzle. Check your connection.', 'no'));
 })();
 </script>

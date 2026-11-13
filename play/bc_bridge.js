@@ -195,6 +195,50 @@
   }
   window.bcSoundStopAll = stopAll;
 
+  // ------------------------------------------------------------ fetch
+
+  // Text from a public web address (Chess.com and Lichess game lists).
+  // Rejects with "HTTP <status>" or a network error.
+  window.bcFetchText = function (url, accept) {
+    var init = accept ? { headers: { Accept: accept } } : {};
+    return fetch(url, init).then(function (r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.text();
+    });
+  };
+
+  // ------------------------------------------------------------ full screen
+
+  // The browser's own full screen (the whole page, or the frame the game is
+  // shown in on the website). Not offered on CrazyGames, which has its own
+  // full-screen button, nor where the browser can't (iPhone Safari).
+  function fsElement() {
+    return document.fullscreenElement || document.webkitFullscreenElement || null;
+  }
+  window.bcFsAvailable = function () {
+    if (sdk) return false;
+    var el = document.documentElement;
+    var can = document.fullscreenEnabled || document.webkitFullscreenEnabled;
+    return !!(can && (el.requestFullscreen || el.webkitRequestFullscreen));
+  };
+  window.bcFsActive = function () { return !!fsElement(); };
+  window.bcFsToggle = function () {
+    attempt(function () {
+      if (fsElement()) {
+        (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+      } else {
+        var el = document.documentElement;
+        var p = (el.requestFullscreen || el.webkitRequestFullscreen).call(el);
+        if (p && p.catch) p.catch(function () {});
+      }
+    });
+  };
+  window.bcFsListen = function (onChange) {
+    ['fullscreenchange', 'webkitfullscreenchange'].forEach(function (type) {
+      document.addEventListener(type, function () { onChange(!!fsElement()); });
+    });
+  };
+
   // ------------------------------------------------------------ engine
 
   // Stockfish runs as a separate program in its own Web Worker; the game
