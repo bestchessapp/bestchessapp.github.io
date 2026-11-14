@@ -90,6 +90,7 @@
   <div class="info">
     <div class="phead">
       <h1>Daily Chess Puzzle</h1>
+      <button class="fsbtn" id="snd" type="button" aria-label="Sound on" title="Sound on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9z"/><path id="sndwave" d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg></button>
       <button class="fsbtn" id="fs" type="button" aria-label="Full screen" title="Full screen" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path id="fsicon" d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
     </div>
     <p id="date">A new puzzle every day.</p>
@@ -137,9 +138,39 @@
     rows.forEach((row, r) => { let f = 0; for (const ch of row) { if (/\d/.test(ch)) f += +ch; else { g['abcdefgh'[f] + (8 - r)] = (ch === ch.toUpperCase() ? 'w' : 'b') + ch.toUpperCase(); f++; } } });
     return g;
   };
+  // ------------------------------------------------ sounds (the game's own)
+  let muted = false;
+  try { muted = localStorage.getItem('bc_puzzle_muted') === '1'; } catch (e) {}
+  let actx = null; const bufs = {};
+  const SND = ['move', 'capture', 'castle', 'check', 'promotion', 'puzzleWrong', 'puzzleSolved', 'select'];
+  const audio = () => {
+    if (!actx) { const C = window.AudioContext || window.webkitAudioContext; if (!C) return null; try { actx = new C(); } catch (e) { return null; } }
+    return actx;
+  };
+  const loadSounds = () => {
+    const c = audio(); if (!c) return;
+    SND.forEach((n) => { if (bufs[n]) return; fetch('../play/assets/assets/sounds/' + n + '.wav')
+      .then((r) => r.ok ? r.arrayBuffer() : Promise.reject()).then((d) => c.decodeAudioData(d))
+      .then((b) => { bufs[n] = b; }).catch(() => {}); });
+  };
+  const play = (n) => {
+    if (muted || !actx || !bufs[n]) return;
+    if (actx.state !== 'running') { try { actx.resume(); } catch (e) {} }
+    try { const s = actx.createBufferSource(); s.buffer = bufs[n]; s.connect(actx.destination); s.start(); } catch (e) {}
+  };
+  // Browsers start audio only after a touch or click.
+  ['pointerdown', 'keydown'].forEach((t) => window.addEventListener(t, () => { loadSounds(); if (actx && actx.state !== 'running') { try { actx.resume(); } catch (e) {} } }, { capture: true, passive: true }));
+  const sndBtn = $('snd');
+  const syncSnd = () => { const l = muted ? 'Sound off' : 'Sound on'; sndBtn.setAttribute('aria-label', l); sndBtn.title = l; $('sndwave').style.display = muted ? 'none' : ''; };
+  sndBtn.onclick = () => { muted = !muted; try { localStorage.setItem('bc_puzzle_muted', muted ? '1' : '0'); } catch (e) {} syncSnd(); };
+  syncSnd();
+  let quietMoves = false; // the setup move on load makes no sound
+
   const apply = (uci) => {
     const from = uci.slice(0, 2), to = uci.slice(2, 4), pc = grid[from];
     if (!pc) return;
+    const captured = !!grid[to] || (pc[1] === 'P' && from[0] !== to[0]);
+    const castled = pc[1] === 'K' && Math.abs(from.charCodeAt(0) - to.charCodeAt(0)) === 2;
     if (pc[1] === 'K' && Math.abs(from.charCodeAt(0) - to.charCodeAt(0)) === 2) {
       const rank = from[1], kside = to[0] === 'g';
       const rf = (kside ? 'h' : 'a') + rank, rt = (kside ? 'f' : 'd') + rank;
@@ -155,6 +186,11 @@
       if (from === sq || to === sq) castle = castle.replace(right, '');
     }
     turn = turn === 'w' ? 'b' : 'w';
+    if (!quietMoves) {
+      const king = Object.keys(grid).find((s) => grid[s] === turn + 'K');
+      const check = king && attacked(grid, king, turn === 'w' ? 'b' : 'w');
+      play(check ? 'check' : uci.length > 4 ? 'promotion' : castled ? 'castle' : captured ? 'capture' : 'move');
+    }
   };
 
   // ------------------------------------------------ legal moves (for the dots)
@@ -250,20 +286,20 @@
   const msg = (t, cls) => { const m = $('msg'); m.textContent = t; m.className = 'msg' + (cls ? ' ' + cls : ''); };
   const done = () => step >= line.length;
   const reply = () => {
-    if (done()) { { solved = true; render(); msg('Solved! Well played.', 'ok'); } $('hint').disabled = true; return; }
+    if (done()) { { solved = true; render(); msg('Solved! Well played.', 'ok'); setTimeout(() => play('puzzleSolved'), 250); } $('hint').disabled = true; return; }
     busy = true;
     setTimeout(() => { apply(line[step]); step++; busy = false; render();
-      if (done()) { { solved = true; render(); msg('Solved! Well played.', 'ok'); } $('hint').disabled = true; } else msg('Correct! Keep going.', 'ok'); }, 500);
+      if (done()) { { solved = true; render(); msg('Solved! Well played.', 'ok'); setTimeout(() => play('puzzleSolved'), 250); } $('hint').disabled = true; } else msg('Correct! Keep going.', 'ok'); }, 500);
   };
   const tryMove = (from, to, el) => {
     const want = line[step];
     if (want.slice(0, 4) === from + to) { apply(want); step++; sel = null; render(); reply(); }
-    else { if (el) el.classList.add('bad'); msg('Not the best move. Try again.', 'no'); sel = null; setTimeout(render, 400); }
+    else { play('puzzleWrong'); if (el) el.classList.add('bad'); msg('Not the best move. Try again.', 'no'); sel = null; setTimeout(render, 400); }
   };
   const tap = (sq, el) => {
     if (busy || done()) return;
     if (sel && sel !== sq && !(grid[sq] && grid[sq][0] === side)) { tryMove(sel, sq, el); return; }
-    if (grid[sq] && grid[sq][0] === side) { sel = sel === sq ? null : sq; render(); }
+    if (grid[sq] && grid[sq][0] === side) { sel = sel === sq ? null : sq; if (sel) play('select'); render(); }
   };
   // Drag and drop: press a piece of yours, move, let go on a square.
   let drag = null, dragged = false;
@@ -302,7 +338,7 @@
     const n = all.length, i = ((day % n) + n) % n; P = all[i];
     const fp = P.f.split(' ');
     turn = fp[1]; castle = fp[2] === '-' ? '' : fp[2]; ep = fp[3] || '-';
-    grid = parse(P.f); last = null; apply(P.s);
+    grid = parse(P.f); last = null; quietMoves = true; apply(P.s); quietMoves = false;
     const parts = P.f.split(' ');
     side = parts[1] === 'w' ? 'b' : 'w'; flip = side === 'b';
     line = P.l.split(' '); step = 0; sel = null; busy = false; solved = false;

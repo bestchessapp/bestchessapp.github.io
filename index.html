@@ -367,6 +367,12 @@ html[data-live="true"] .when-soon { display: none !important; }
   .side { margin: 0 8px; }
   .tool { border-radius: 0; border-left: 0; border-right: 0; }
 }
+@media (max-width: 900px) {
+  /* A soft fade on the side that has more tabs. */
+  .side.more-right { -webkit-mask-image: linear-gradient(to right, #000 82%, transparent); mask-image: linear-gradient(to right, #000 82%, transparent); }
+  .side.more-left { -webkit-mask-image: linear-gradient(to left, #000 82%, transparent); mask-image: linear-gradient(to left, #000 82%, transparent); }
+  .side.more-left.more-right { -webkit-mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent); mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent); }
+}
 /* App download bar that slides up from the bottom (closable, remembered). */
 .appbar { position: fixed; left: 50%; bottom: 16px; z-index: 50; width: min(760px, calc(100% - 24px));
   transform: translate(-50%, 140%); transition: transform .45s cubic-bezier(.2,.9,.3,1.2);
@@ -777,6 +783,54 @@ html[data-live="true"] .when-soon { display: none !important; }
     bar.classList.remove('show');
     try { localStorage.setItem(key, String(Date.now())); } catch (e) {}
   });
+})();
+</script>
+<script>
+/* Phones: the tab row slides slowly on its own so players see there are
+   more tabs; a touch stops it, and it starts again a few seconds later. */
+(function () {
+  var row = document.querySelector('.side');
+  if (!row) return;
+  var still = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var pos = 0, dir = 1, wait = 1500, last = 0, pausedUntil = 0, visible = true;
+  function edges() {
+    var max = row.scrollWidth - row.clientWidth;
+    row.classList.toggle('more-left', max > 2 && row.scrollLeft > 2);
+    row.classList.toggle('more-right', max > 2 && row.scrollLeft < max - 2);
+  }
+  function hold(ms) { pausedUntil = performance.now() + ms; }
+  ['pointerdown', 'touchstart', 'wheel', 'focusin', 'mouseenter'].forEach(function (t) {
+    row.addEventListener(t, function () { hold(5000); }, { passive: true });
+  });
+  row.addEventListener('scroll', function () {
+    /* While the player holds it, follow where they put it. */
+    if (performance.now() < pausedUntil) pos = row.scrollLeft;
+    edges();
+  }, { passive: true });
+  window.addEventListener('resize', edges);
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(function (e) { visible = e[0].isIntersecting; }).observe(row);
+  }
+  edges();
+  if (still) return;
+  hold(2500);
+  function tick(now) {
+    var dt = last ? Math.min(now - last, 250) : 0;
+    last = now;
+    var max = row.scrollWidth - row.clientWidth;
+    if (max > 4 && visible && !document.hidden && now > pausedUntil) {
+      if (wait > 0) {
+        wait -= dt;
+      } else {
+        pos += dir * dt * 0.022;
+        if (pos >= max) { pos = max; dir = -1; wait = 1800; }
+        if (pos <= 0) { pos = 0; dir = 1; wait = 1800; }
+        row.scrollLeft = pos;
+      }
+    }
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
 })();
 </script>
 </body>
